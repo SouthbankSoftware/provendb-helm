@@ -1,0 +1,54 @@
+# Default values for proxy-helm.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+image:
+  repository: asia.gcr.io/provendb/provendb-proxy
+  tag: latest
+  pullPolicy: Always
+
+service:
+  type: LoadBalancer
+  port: 27018
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+#proxy config
+
+proxy:
+  mongodb:
+    username: sbs  
+    password: DBEnvy2016
+    uri: "mongodb+srv://sbs:DBEnvy2016@provendb-staging-vki7g.gcp.mongodb.net/provendocs"
+    ssl: "false"
+
+  port: 27018
+  userDatabases: provendocs
+
+  treeservice:
+    host: "treeservice-service.staging.svc.cluster.local"
+    port: 10000
+    dbinstance: "local-dev"
+
+  maxconnections: 10
+  maxthreads: 50
+  authentication: "NONE"
+
+

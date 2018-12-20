@@ -1,0 +1,107 @@
+##################################################################################################
+# Deployment
+##################################################################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-proxy
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-proxy
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "true"
+        sidecar.istio.io/proxyImage: docker.io/istio/proxyv2:0.8.0
+      labels:
+        app: {{ .Release.Name }}-proxy
+    spec:
+      containers:
+      - name: proxy
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: Always
+        readinessProbe:
+          tcpSocket:
+            port: {{ .Values.proxy.port }}
+          initialDelaySeconds: 120
+          periodSeconds: 60
+        livenessProbe:
+          tcpSocket:
+            port: {{ .Values.proxy.port }}
+          initialDelaySeconds: 120
+          periodSeconds: 60
+        ports:
+        - containerPort: {{ .Values.proxy.port }}
+        command: ["/bin/bash"]
+        args: ["-c","./proxy-server.sh \
+                        ${USER_DATABASES} \
+                        ${PROXY_PORT} \
+                        ${PROXY_MONGODB_URI} \
+                        ${MAX_THREADS} \
+                        ${MAX_CONNECTIONS} \
+                        ${PROXY_MONGODB_SSL} \
+                        ${AUTHENTICATION_MECHANISM}"]
+        env:
+          - name: PROXY_MONGODB_URI
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}-proxy-configmap
+                key: proxy.mongodb.uri
+          - name: PROXY_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}-proxy-configmap
+                key: proxy.port
+          - name: USER_DATABASES
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}-proxy-configmap
+                key: proxy.userDatabases
+          - name: ENV_PROVENDB_MONGO_USER
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-proxy-secrets
+                key: proxy.mongodb.username
+          - name: ENV_PROVENDB_MONGO_PWD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-proxy-secrets
+                key: proxy.mongodb.password
+          - name: PROXY_MONGODB_SSL
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}-proxy-configmap
+                key: proxy.mongodb.ssl
+          - name: ENV_TREE_SERVICE_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}-proxy-configmap
+                key: proxy.treeservice.host
+          - name: ENV_TREE_SERVICE_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}-proxy-configmap
+                key: proxy.treeservice.port
+          - name: ENV_TREE_SERVICE_DB_INSTANCE
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}-proxy-configmap
+                key: proxy.treeservice.dbinstance
+          - name: MAX_THREADS
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}-proxy-configmap
+                key: proxy.max.threads
+          - name: MAX_CONNECTIONS
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}-proxy-configmap
+                key: proxy.max.connections
+          - name: AUTHENTICATION_MECHANISM
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}-proxy-configmap
+                key: proxy.authentication.mechanism
