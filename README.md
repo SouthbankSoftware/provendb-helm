@@ -34,6 +34,8 @@ gcloud container clusters get-credentials provendb --zone australia-southeast1-a
 ```
 helm install --name provendb --namespace dev proxy-helm-0.1.0.tgz
 ```
+You can override these values https://github.com/SouthbankSoftware/provendb-helm/blob/master/charts/proxy-helm/values.yaml when using the above command
+
 The above will generate the following output
 ```
 NAME:   provendb
@@ -73,6 +75,7 @@ After a while, you should be able to access proxy using the following command:
 ```
 mongo $SERVICE_IP:27018
 ```
+
 
 
 
