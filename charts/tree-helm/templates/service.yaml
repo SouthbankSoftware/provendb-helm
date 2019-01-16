@@ -1,19 +1,17 @@
+##################################################################################################
+# Treeservice service
+##################################################################################################
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "tree-helm.fullname" . }}
-  labels:
-    app.kubernetes.io/name: {{ include "tree-helm.name" . }}
-    helm.sh/chart: {{ include "tree-helm.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  name: {{ .Release.Name }}-treeservice-service
+  namespace: {{ .Release.Namespace }}
 spec:
-  type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
-      targetPort: http
+    - port: {{ include "treeservice.host.port" . }}
+      targetPort: {{ include "treeservice.host.port" . }}
       protocol: TCP
-      name: http
+      name: treeservice-port
   selector:
-    app.kubernetes.io/name: {{ include "tree-helm.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    app: {{ .Release.Name }}-treeservice
+---    

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-treeservice-configmap
+  namespace: {{ .Release.Namespace }}
+data:
+  treeservice.mongodbcache.bind.ip: {{ include "treeservice.mongodbcache.bindip" . }}
+  treeservice.mongodbcache.port: {{ include "treeservice.mongodbcache.port" . | quote }}
+  treeservice.mongodbcache.pvc.name: {{ .Values.treeservice.mongodbcache.pvcname }}
+
+  treeservice.cachedb.uri: {{ .Values.treeservice.mongodbcache.uri}}
+  treeservice.host.port: {{ .Values.treeservice.host.port }}
+  treeservice.mongo.targetDB.uri: {{ .Values.treeservice.mongo.targetDBuri }}
+  treeservice.mongo.targetDB: {{ .Values.treeservice.mongo.targetDB }}
+  treeservice.treeenv: {{ .Values.treeservice.treeenv }}

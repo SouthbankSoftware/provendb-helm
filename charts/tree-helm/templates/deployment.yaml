@@ -1,51 +1,131 @@
-apiVersion: apps/v1beta2
-kind: Deployment
+##################################################################################################
+# Deployment
+##################################################################################################
+apiVersion: apps/v1
+kind: StatefulSet
 metadata:
-  name: {{ include "tree-helm.fullname" . }}
-  labels:
-    app.kubernetes.io/name: {{ include "tree-helm.name" . }}
-    helm.sh/chart: {{ include "tree-helm.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  name: {{ .Release.Name }}-treeservice
+  namespace: {{ .Release.Namespace }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  serviceName: {{ .Release.Name }}-treeservice-service
+  replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "tree-helm.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      app: {{ .Release.Name }}-treeservice
   template:
     metadata:
+      annotations:
+        sidecar.istio.io/inject: "true" #Open issue https://github.com/istio/istio/issues/9571
       labels:
-        app.kubernetes.io/name: {{ include "tree-helm.name" . }}
-        app.kubernetes.io/instance: {{ .Release.Name }}
+        app: {{ .Release.Name }}-treeservice
     spec:
       containers:
-        - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          ports:
-            - name: http
-              containerPort: 80
-              protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
-          resources:
-{{ toYaml .Values.resources | indent 12 }}
-    {{- with .Values.nodeSelector }}
-      nodeSelector:
-{{ toYaml . | indent 8 }}
-    {{- end }}
-    {{- with .Values.affinity }}
-      affinity:
-{{ toYaml . | indent 8 }}
-    {{- end }}
-    {{- with .Values.tolerations }}
-      tolerations:
-{{ toYaml . | indent 8 }}
-    {{- end }}
+      - name: mongodb-cache
+        image: mongo:latest
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: {{ .Values.treeservice.mongodbcache.pvcname }}
+          mountPath: /data/db
+{{ toYaml .Values.treeservice.mongodbcache.resources | indent 10 }}   
+        readinessProbe: 
+          exec:
+            command:
+            - bash
+            - "-c"
+            - |
+              mongo --eval "db.stats()" --port ${MONGODBCACHE_PORT} --host ${MONGODBCACHE_BIND_IP}
+          initialDelaySeconds: 60 #wait this period after staring fist time
+          periodSeconds: 30    # polling interval every 30 seconds
+          timeoutSeconds: 60 
+        livenessProbe: 
+          exec:
+            command:
+            - bash
+            - "-c"
+            - |
+              mongo --eval "db.stats()" --port ${MONGODBCACHE_PORT} --host ${MONGODBCACHE_BIND_IP}
+          initialDelaySeconds: 60 #wait this period after staring fist time
+          periodSeconds: 30    # polling interval every 30 seconds
+          timeoutSeconds: 60   
+        command: ["/bin/bash", "-c"]
+        # args: ["-c","tail -f /etc/hosts"]
+        args: ["-c","mongod --port ${MONGODBCACHE_PORT} --bind_ip ${MONGODBCACHE_BIND_IP} --replSet test && \
+                                    mongo --eval \"rs.initiate({_id: 'test',
+                                                                members: [
+                                                                    {
+                                                                    _id: 0,
+                                                                    host: '127.0.0.1:30010'
+                                                                    },
+                                                                ]
+                                                                })\""] 
+        env:
+          - name: MONGODBCACHE_BIND_IP
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}-treeservice-configmap
+                key: treeservice.mongodbcache.bind.ip
+          - name: MONGODBCACHE_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}-treeservice-configmap
+                key: treeservice.mongodbcache.port   
+      - name: tree-service
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+        ports:
+        - containerPort: {{ include "treeservice.host.port" . }}
+        volumeMounts:
+        - name: {{ .Values.treeservice.mongodbcache.pvcname }}
+          mountPath: /data/db
+        resources: 
+{{ toYaml .Values.treeservice.host.resources | indent 10 }}  
+        readinessProbe:
+          tcpSocket:
+            port: {{ include "treeservice.host.port" . }}
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 60
+        livenessProbe:
+          tcpSocket:
+            port: {{ include "treeservice.host.port" . }}
+          initialDelaySeconds: 30
+          periodSeconds: 120 
+          timeoutSeconds: 60
+        command: ["./tree"]
+        env:
+          - name: TREE_CACHE_DB_URI
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}-treeservice-configmap
+                key: treeservice.cachedb.uri
+          - name: TREE_HOST_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}-treeservice-configmap
+                key: treeservice.host.port
+          - name: mongoUri
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}-treeservice-configmap
+                key: treeservice.mongo.targetDB.uri
+          - name: TREE_ENV
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}-treeservice-configmap
+                key: treeservice.treeenv
+          - name: mongoTargetDB
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}-treeservice-configmap
+                key: treeservice.mongo.targetDB     
+
+    
+  volumeClaimTemplates:
+  - metadata:
+      name: {{ .Values.treeservice.mongodbcache.pvcname }}
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: fast
+      resources:
+        requests:
+          storage: "50Gi"
