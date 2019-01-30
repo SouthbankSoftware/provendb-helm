@@ -1,10 +1,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-proxy-configmap
+  name: {{ .Release.Name }}-configmap
   namespace: {{ .Release.Namespace }}
 data:
-  proxy.mongodb.uri: {{ .Values.proxy.mongodb.uri | quote }}
   proxy.mongodb.ssl: {{ .Values.proxy.mongodb.ssl | quote }}
   
   proxy.port: {{ .Values.proxy.port | quote }}
@@ -16,3 +15,5 @@ data:
   proxy.max.connections: {{ .Values.proxy.maxconnections | quote }}
   proxy.max.threads: {{ .Values.proxy.maxthreads | quote }}
   proxy.authentication.mechanism: {{ .Values.proxy.authentication | quote }}
+
+  proxy.sidecarmongodb.port: {{ .Values.proxy.sidecarmongodb.port | quote }}

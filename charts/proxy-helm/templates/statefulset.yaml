@@ -1,0 +1,145 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-statefulset
+  namespace: {{ .Release.Namespace }}
+spec:
+  serviceName: {{ .Release.Name }}-service
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "true"
+        sidecar.istio.io/proxyImage: docker.io/istio/proxyv2:0.8.0
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: proxy-sidecar-mongodb
+          image: mongo:latest
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: {{ .Release.Name }}-sidecar-mongodb-data
+              mountPath: /data/db
+          readinessProbe:
+            exec:
+              command:
+                - mongo
+                - --port
+                - $(SIDECAR_MONGODB_PORT)
+                - --eval
+                - db.stats()
+            initialDelaySeconds: 2
+            periodSeconds: 5
+            timeoutSeconds: 30
+          livenessProbe:
+            exec:
+              command:
+                - mongo
+                - --port
+                - $(SIDECAR_MONGODB_PORT)
+                - --eval
+                - db.stats()
+            initialDelaySeconds: 2
+            periodSeconds: 5
+            timeoutSeconds: 30
+          command:
+            - mongod
+            - --port
+            - $(SIDECAR_MONGODB_PORT)
+          env:
+            - name: SIDECAR_MONGODB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-configmap
+                  key: proxy.sidecarmongodb.port
+        - name: proxy
+          image: asia.gcr.io/provendb/provendb-proxy:latest
+          imagePullPolicy: Always
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.proxy.port }}
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.proxy.port }}
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          ports:
+            - containerPort: {{ .Values.proxy.port }}
+          command: ["/bin/bash"]
+          args: [
+              "-c",
+              "./proxy-server.sh \
+              ${USER_DATABASES} \
+              ${PROXY_PORT} \
+              ${PROXY_MONGODB_URI} \
+              ${MAX_THREADS} \
+              ${MAX_CONNECTIONS} \
+              ${PROXY_MONGODB_SSL} \
+              ${AUTHENTICATION_MECHANISM}",
+            ]
+          env:
+            - name: PROXY_MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secret
+                  key: proxy.mongodb.uri
+            - name: PROXY_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-configmap
+                  key: proxy.port
+            - name: USER_DATABASES
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-configmap
+                  key: proxy.userDatabases
+            - name: PROXY_MONGODB_SSL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-configmap
+                  key: proxy.mongodb.ssl
+            - name: ENV_TREE_SERVICE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-configmap
+                  key: proxy.treeservice.host
+            - name: ENV_TREE_SERVICE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-configmap
+                  key: proxy.treeservice.port
+            - name: ENV_TREE_SERVICE_DB_INSTANCE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-configmap
+                  key: proxy.treeservice.dbinstance
+            - name: MAX_THREADS
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-configmap
+                  key: proxy.max.threads
+            - name: MAX_CONNECTIONS
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-configmap
+                  key: proxy.max.connections
+            - name: AUTHENTICATION_MECHANISM
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-configmap
+                  key: proxy.authentication.mechanism
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ .Release.Name }}-sidecar-mongodb-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: fast
+        resources:
+          requests:
+            storage: 1Gi

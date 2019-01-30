@@ -1,16 +1,13 @@
-##################################################################################################
-# Proxy service
-##################################################################################################
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-proxy-service
+  name: {{ .Release.Name }}-service
   namespace: {{ .Release.Namespace }}
 spec:
   selector:
-    app: {{ .Release.Name }}-proxy
+    app: {{ .Release.Name }}
   ports:
-    - name: {{ .Release.Name }}-proxy-port
+    - name: {{ .Release.Name }}-port
       port: {{ .Values.service.port }}
       targetPort: {{ .Values.proxy.port }} 
       protocol: TCP
