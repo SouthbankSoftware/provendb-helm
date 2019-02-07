@@ -43,26 +43,51 @@ spec:
                 - $(SIDECAR_MONGODB_PORT)
                 - --eval
                 - db.stats()
-            initialDelaySeconds: 2
+            initialDelaySeconds: 5
             periodSeconds: 5
             timeoutSeconds: 30
-          command:
-            - mongod
-            - --port
-            - $(SIDECAR_MONGODB_PORT)
+          command: [ "/bin/sh", "-c", "(mongod  --fork --logpath /var/log/mongod.log --port 27017 --bind_ip ${BIND_IP} ) && \
+                      mongo --host $BIND_IP $USER_DATABASES --port 27017 --eval \"var userPresent = db.runCommand({ usersInfo: { user: '$AUTH_USERNAME', db: '$USER_DATABASES' } }).users.length > 0;
+                      if(!userPresent){
+                        db.runCommand({ createRole: 'superadmin', privileges: [], roles: [] });
+                        db.runCommand({ createRole: 'superadmin', privileges: [], roles: [] });
+                        db.runCommand({ createRole: 'superadmin', privileges: [], roles: [] });
+                        db.runCommand({ createUser: '$AUTH_USERNAME', pwd: '$AUTH_PASSWORD', roles: [{ role: 'superadmin', db: '$USER_DATABASES' }] })
+                      }\" && \
+                      tail -f /var/log/mongod.log"]
           env:
             - name: SIDECAR_MONGODB_PORT
               valueFrom:
                 configMapKeyRef:
                   name: {{ .Release.Name }}-configmap
                   key: proxy.sidecarmongodb.port
+            - name: USER_DATABASES
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-configmap
+                  key: proxy.userDatabases
+            - name: BIND_IP
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-configmap
+                  key: proxy.sidecarmongodb.bind.ip
+            - name: AUTH_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-configmap
+                  key: proxy.auth.username
+            - name: AUTH_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-configmap
+                  key: proxy.auth.password
         - name: proxy
           image: asia.gcr.io/provendb/provendb-proxy:latest
           imagePullPolicy: Always
           readinessProbe:
             tcpSocket:
               port: {{ .Values.proxy.port }}
-            initialDelaySeconds: 2
+            initialDelaySeconds: 5
             periodSeconds: 5
           livenessProbe:
             tcpSocket:
@@ -80,10 +105,15 @@ spec:
               ${PROXY_MONGODB_URI} \
               ${MAX_THREADS} \
               ${MAX_CONNECTIONS} \
-              ${PROXY_MONGODB_SSL} \
-              ${AUTHENTICATION_MECHANISM}",
+              ${PROXY_AUTH_ENABLED} \
+              ${PROXY_MONGO_AUTH_URI}"
             ]
           env:
+            - name: PROXY_MONGO_AUTH_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-configmap
+                  key: proxy.mongo.auth.uri
             - name: PROXY_MONGODB_URI
               valueFrom:
                 secretKeyRef:
@@ -129,11 +159,11 @@ spec:
                 configMapKeyRef:
                   name: {{ .Release.Name }}-configmap
                   key: proxy.max.connections
-            - name: AUTHENTICATION_MECHANISM
+            - name: PROXY_AUTH_ENABLED
               valueFrom:
                 configMapKeyRef:
                   name: {{ .Release.Name }}-configmap
-                  key: proxy.authentication.mechanism
+                  key: proxy.auth.enabled
   volumeClaimTemplates:
     - metadata:
         name: {{ .Release.Name }}-sidecar-mongodb-data

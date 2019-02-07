@@ -14,6 +14,10 @@ data:
   proxy.treeservice.dbinstance: {{ .Values.proxy.treeservice.dbinstance | quote }}
   proxy.max.connections: {{ .Values.proxy.maxconnections | quote }}
   proxy.max.threads: {{ .Values.proxy.maxthreads | quote }}
-  proxy.authentication.mechanism: {{ .Values.proxy.authentication | quote }}
+  proxy.auth.enabled: {{ .Values.proxy.auth.enabled | quote }}
+  proxy.auth.username: {{ .Values.proxy.auth.username | quote }}
+  proxy.auth.password: {{ .Values.proxy.auth.password | quote }}
+  proxy.mongo.auth.uri: {{ .Values.proxy.auth.uri | quote }}
 
   proxy.sidecarmongodb.port: {{ .Values.proxy.sidecarmongodb.port | quote }}
+  proxy.sidecarmongodb.bind.ip: {{ .Values.proxy.sidecarmongodb.bindip | quote }}
