@@ -50,8 +50,7 @@ spec:
                       mongo --host $BIND_IP $USER_DATABASES --port 27017 --eval \"var userPresent = db.runCommand({ usersInfo: { user: '$AUTH_USERNAME', db: '$USER_DATABASES' } }).users.length > 0;
                       if(!userPresent){
                         db.runCommand({ createRole: 'superadmin', privileges: [], roles: [] });
-                        db.runCommand({ createRole: 'superadmin', privileges: [], roles: [] });
-                        db.runCommand({ createRole: 'superadmin', privileges: [], roles: [] });
+                        db.runCommand({ createRole: 'superuser', privileges: [], roles: [] });
                         db.runCommand({ createUser: '$AUTH_USERNAME', pwd: '$AUTH_PASSWORD', roles: [{ role: 'superadmin', db: '$USER_DATABASES' }] })
                       }\" && \
                       tail -f /var/log/mongod.log"]
@@ -73,13 +72,13 @@ spec:
                   key: proxy.sidecarmongodb.bind.ip
             - name: AUTH_USERNAME
               valueFrom:
-                configMapKeyRef:
-                  name: {{ .Release.Name }}-configmap
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secret
                   key: proxy.auth.username
             - name: AUTH_PASSWORD
               valueFrom:
-                configMapKeyRef:
-                  name: {{ .Release.Name }}-configmap
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secret
                   key: proxy.auth.password
         - name: proxy
           image: asia.gcr.io/provendb/provendb-proxy:latest
