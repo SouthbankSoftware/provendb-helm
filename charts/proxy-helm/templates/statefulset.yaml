@@ -12,7 +12,7 @@ spec:
   template:
     metadata:
       annotations:
-        sidecar.istio.io/inject: "true"
+        sidecar.istio.io/inject: "false"
         sidecar.istio.io/proxyImage: docker.io/istio/proxyv2:0.8.0
       labels:
         app: {{ .Release.Name }}
@@ -95,6 +95,10 @@ spec:
             periodSeconds: 5
           ports:
             - containerPort: {{ .Values.proxy.port }}
+          volumeMounts:
+          - name: proxy-p12-file
+            mountPath: /secrets/proxy-p12-file
+            readOnly: true  
           command: ["/bin/bash"]
           args: [
               "-c",
@@ -105,9 +109,24 @@ spec:
               ${MAX_THREADS} \
               ${MAX_CONNECTIONS} \
               ${PROXY_AUTH_ENABLED} \
-              ${PROXY_MONGO_AUTH_URI}"
+              ${PROXY_MONGO_AUTH_URI} \
+              ${PROXY_SSL_ENABLE} \
+              ${PROXY_P12_FILE_PATH} \
+              ${PROXY_P12_FILE_PASSWORD}"
             ]
           env:
+            - name: PROXY_P12_FILE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secret
+                  key: proxy.p12.file.password
+            - name: PROXY_P12_FILE_PATH
+              value: "/secrets/proxy-p12-file/proxy.p12"
+            - name: PROXY_SSL_ENABLE
+              valueFrom:
+                  configMapKeyRef:
+                    name: {{ .Release.Name }}-configmap
+                    key: proxy.ssl.enable
             - name: PROXY_MONGO_AUTH_URI
               valueFrom:
                 configMapKeyRef:
@@ -163,6 +182,10 @@ spec:
                 configMapKeyRef:
                   name: {{ .Release.Name }}-configmap
                   key: proxy.auth.enabled
+      volumes:
+        - name: proxy-p12-file
+          secret:
+            secretName: proxy-p12-file
   volumeClaimTemplates:
     - metadata:
         name: {{ .Release.Name }}-sidecar-mongodb-data

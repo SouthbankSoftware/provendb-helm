@@ -8,12 +8,12 @@ data:
   
   proxy.port: {{ .Values.proxy.port | quote }}
   proxy.userDatabases: {{ .Values.proxy.userDatabases | quote }}
-
+  proxy.ssl.enable: {{ .Values.proxy.sslEnabled | quote }}
   proxy.treeservice.host: {{ .Values.proxy.treeservice.host | quote }}
   proxy.treeservice.port: {{ .Values.proxy.treeservice.port | quote }}
   proxy.treeservice.dbinstance: {{ .Values.proxy.treeservice.dbinstance | quote }}
-  proxy.max.connections: {{ .Values.proxy.maxconnections | quote }}
-  proxy.max.threads: {{ .Values.proxy.maxthreads | quote }}
+  proxy.max.connections: {{ .Values.proxy.maxConnections | quote }}
+  proxy.max.threads: {{ .Values.proxy.maxThreads | quote }}
   proxy.auth.enabled: {{ .Values.proxy.auth.enabled | quote }}
   proxy.mongo.auth.uri: {{ .Values.proxy.auth.uri | quote }}
 
