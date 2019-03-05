@@ -7,10 +7,10 @@ service:
 proxy:
   mongodb:
     uri: "mongodb+srv://sbs:DBEnvy2016@provendb-staging-vki7g.gcp.mongodb.net/provendocs"
-    ssl: "false"
 
   sidecarmongodb:
     port: 27017
+    bindip: "127.0.0.1"
 
   port: 27018
   userDatabases: provendocs
@@ -20,8 +20,14 @@ proxy:
     port: 10000
     dbinstance: "local-dev"
 
-  maxconnections: 10
-  maxthreads: 50
-  authentication: "NONE"
-
+  sslEnabled: "true"
+  maxConnections: 10
+  maxThreads: 50
+  auth:
+    enabled: "true"
+    uri: "mongodb://localhost:27017"
+    username: "admin"
+    password: "password"
+  p12:
+    filePassword: "provendb"
 
