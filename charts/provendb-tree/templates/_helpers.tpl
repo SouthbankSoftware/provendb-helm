@@ -31,8 +31,8 @@ Create chart name and version as used by the chart label.
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
-{{- define "treeservice.mongodbcache.bindip" -}}
-{{- $match := .Values.treeservice.mongodbcache.uri | toString | regexFind "//.*:" | trimAll ":" | trimAll "/" -}}
+{{- define "mongodbcache.bindip" -}}
+{{- $match := .Values.mongodbcache.bindip | toString | regexFind "//.*:" | trimAll ":" | trimAll "/" -}}
 {{- if eq $match "localhost" -}}
 "127.0.0.1"
 {{- else -}}
@@ -40,17 +40,17 @@ Create chart name and version as used by the chart label.
 {{- end -}}
 {{- end -}}
 
-{{- define "treeservice.mongodbcache.port" -}}
-{{- .Values.treeservice.mongodbcache.uri | toString | regexFind "(?:[^:]+)$" -}}
+{{- define "mongodbcache.port" -}}
+{{- .Values.mongodbcache.uri | toString | regexFind "(?:[^:]+)$" -}}
 {{- end -}}
 
-{{- define "treeservice.host.port" -}}
-{{- .Values.treeservice.host.port | toString | regexFind "(?:[^:]+)$" -}}
+{{- define "host.port" -}}
+{{- .Values.host.port | toString | regexFind "(?:[^:]+)$" -}}
 {{- end -}}
 
-{{- define "treeservice.host" -}}
-{{- .Values.treeservice.host.port | toString | regexFind ".*:" | trimAll ":" | quote -}}
+{{- define "host" -}}
+{{- .Values.host.port | toString | regexFind ".*:" | trimAll ":" | quote -}}
 {{- end -}}
-# {{- printf "%s" .Values.treeservice.cachedb.uri | quote -}}
+# {{- printf "%s" .Values.cachedb.uri | quote -}}
 
 

@@ -1,0 +1,21 @@
+##################################################################################################
+# Treeservice service
+##################################################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: provendb-tree-{{ .Release.Name }}-service
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+    - port: {{ .Values.tree.host.port }}
+      targetPort: {{ .Values.tree.host.port }}
+      protocol: TCP
+      name: provendb-tree-{{ .Release.Name }}-port
+    - port: {{ .Values.tree.prometheus.port }}
+      targetPort: {{ .Values.tree.prometheus.port }}
+      protocol: TCP
+      name: provendb-tree-{{ .Release.Name }}-prometheus-port  
+  selector:
+    app: provendb-tree-{{ .Release.Name }}
+---    
