@@ -185,7 +185,7 @@ spec:
       volumes:
         - name: proxy-p12-file
           secret:
-            secretName: proxy-p12-file
+            secretName: proxy-p12-file-{{ .Release.Name }}
   volumeClaimTemplates:
     - metadata:
         name: proxy-{{ .Release.Name }}-sidecar-mongodb-data

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-configmap
+  name: proxy-{{ .Release.Name }}-configmap
   namespace: {{ .Release.Namespace }}
 data:
   proxy.mongodb.ssl: {{ .Values.proxy.mongodb.ssl | quote }}
