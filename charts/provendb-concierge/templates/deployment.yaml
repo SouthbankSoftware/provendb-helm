@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: provendb-concierge-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: provendb-concierge-{{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: {{ .Values.prometheus.enable | quote }}
+        prometheus.io/port: {{ .Values.prometheus.port | quote }}
+        sidecar.istio.io/inject: {{ .Values.istioSidecarInject | quote }} 
+      labels:
+        app: provendb-concierge-{{ .Release.Name }}
+    spec:
+      containers:
+        - name: concierge
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: Always
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.grpc.port }}
+            initialDelaySeconds: 2
+            periodSeconds: 5
+            timeoutSeconds: 30
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.grpc.port }}
+            initialDelaySeconds: 2
+            periodSeconds: 5
+            timeoutSeconds: 30
+          ports:
+            - containerPort: {{ .Values.grpc.port }}
+            - containerPort: {{ .Values.prometheus.port }}
+          env:
+            - name: CONCIERGE_STATE_DB_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: provendb-concierge-{{ .Release.Name }}-configmap
+                  key: concierge.state.db.uri
+            - name: CONCIERGE_TREE_HOST_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: provendb-concierge-{{ .Release.Name }}-configmap
+                  key: concierge.tree.host.port
+            - name: CONCIERGE_JAEGER_AGENT_HOST_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: provendb-concierge-{{ .Release.Name }}-configmap
+                  key: jaeger-agent.host.port

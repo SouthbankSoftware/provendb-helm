@@ -1,0 +1,15 @@
+replicaCount: 1
+istioSidecarInject: true
+
+http:
+  port: 8080
+
+image:
+  repository: asia.gcr.io/provendb/provendocs
+  tag: latest
+
+docs:
+  url: provendocs.com    
+
+env: prod
+

@@ -6,8 +6,6 @@ replicaCount: 1
 istioSidecarInject: true
 
 tree:
-  host:
-    port: 10000
   prometheus:
     enable: true
     port: 10001
@@ -18,6 +16,8 @@ tree:
     limits:
       memory: 8Gi # 4 GB
       cpu: 3000 #  1 CPUs  
+  host:
+    port: 10000
 
 mongodbcache:
   bindip: 127.0.0.1

@@ -1,0 +1,84 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: provendb-user-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: provendb-user-{{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: {{ .Values.istioSidecarInject | quote }} 
+      labels:
+        app: provendb-user-{{ .Release.Name }}
+    spec:
+      containers:
+      - name: usermodule
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        # image: asia.gcr.io/provendb/provendb-user:alpine
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+              path: /status
+              port: {{ .Values.http.port }}
+          initialDelaySeconds: 5 #wait this period after starting first time
+          periodSeconds: 30  # polling interval
+          timeoutSeconds: 60    # wish to receive response within this time period
+        readinessProbe: 
+          httpGet:
+              path: /status
+              port: {{ .Values.http.port }}
+          initialDelaySeconds: 5 #wait this period after staring first time
+          periodSeconds: 30    # polling interval
+          timeoutSeconds: 60   
+        ports:
+        - containerPort: {{ .Values.http.port }}
+        - containerPort: {{ .Values.grpc.port }}
+        command: ["./user"]
+        env:
+          - name: USER_MONGO_URI
+            valueFrom:
+              configMapKeyRef:
+                name: provendb-user-{{ .Release.Name }}-configmap
+                key: usermodule.mongo.uri
+          - name: USER_GRPC_HOST_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: provendb-user-{{ .Release.Name }}-configmap
+                key: usermodule.grpc.host.port
+          - name: USER_HTTP_HOST_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: provendb-user-{{ .Release.Name }}-configmap
+                key: usermodule.http.host.port
+          - name: USER_HTTP_DOMAIN_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: provendb-user-{{ .Release.Name }}-configmap
+                key: usermodule.domain.name
+          - name: GOOGLE_OAUTH_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                name: provendb-user-{{ .Release.Name }}-secret
+                key: usermodule.google.oauth.clientid
+          - name: GOOGLE_OAUTH_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: provendb-user-{{ .Release.Name }}-secret
+                key: usermodule.google.oauth.secret
+
+          - name: GITHUB_OAUTH_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                name: provendb-user-{{ .Release.Name }}-secret
+                key: usermodule.github.oauth.clientid
+                
+          - name: GITHUB_OAUTH_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: provendb-user-{{ .Release.Name }}-secret
+                key: usermodule.github.oauth.secret

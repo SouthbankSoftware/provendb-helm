@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: provendocs-{{ .Release.Name }}-configmap
+  namespace: {{ .Release.Namespace }}
+data:
+  provendocs.github.login.auth.callback: "http://{{ .Values.docs.url }}/auth/github/callback"
+  provendocs.github.signup.callback: "http://{{ .Values.docs.url }}/signup/github/callback"
+  #Google
+  provendocs.google.auth.callback: "http://{{ .Values.docs.url }}/auth/google/callback"
+  provendocs.google.signup.callback: "http://{{ .Values.docs.url }}/signup/google/callback"
+
+  # URI of MongoDB for persisting data.
+  provendocs.uri: "mongodb://admin:password@proxy.provendb.com:27018/provendocs"
+  provendocs.user.module.url: {{ .Values.user.domain.name }}
+  provendocs.docs.url: {{ .Values.docs.url }}
+  provendocs.api.url: {{ .Values.apigateway.domain.name }}
+  provendocs.internal.api.url: provendb-api-gateway-{{ .Release.Name }}-service.{{ .Release.Namespace }}.svc.cluster.local:{{ template "apigatewayport" . }}
+  provendocs.env: {{ .Values.env }}
