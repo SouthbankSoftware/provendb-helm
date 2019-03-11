@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-service
+  name: proxy-{{ .Release.Name }}-service
   namespace: {{ .Release.Namespace }}
 spec:
   selector:
-    app: {{ .Release.Name }}
+    app: proxy-{{ .Release.Name }}
   ports:
-    - name: {{ .Release.Name }}-port
+    - name: proxy-{{ .Release.Name }}-port
       port: {{ .Values.service.port }}
       targetPort: {{ .Values.proxy.port }} 
       protocol: TCP
