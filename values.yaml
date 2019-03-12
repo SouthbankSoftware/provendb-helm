@@ -1,8 +1,44 @@
 provendb-proxy:
-  enabled: false
-  istio-sidecar-injection: false
+  enabled: true
 
 provendb-tree:
   enabled: true
+
+provendb-user:
+  enabled: true
   
+provendb-api-gateway:
+  enabled: true
+  oauth:
+    redirect:
+      host: apigateway.provendb.com
+  user:
+    domain:
+      name: usermodule.provendb.com
+  domain:
+    name: apigateway.provendb.com
+  allowed:
+    urls: http://provendocs.com/login
+
+provendocs:
+  enabled: true
+  env: prod
+
+provendb-concierge:
+  grpc:
+    port: 10002
+  prometheus:
+    port: 10003  
+  enabled: true
+
+
+global:
+  jaegeragent:
+    host:
+      port: "jaeger-agent.istio-system.svc.cluster.local:6831"    
+
+
+   
+
+
     

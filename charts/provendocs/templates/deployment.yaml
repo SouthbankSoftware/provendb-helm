@@ -40,86 +40,62 @@ spec:
         args: ["-c","node -- bin/www"] 
         # args: ["-c", "tail -f /etc/resolv.conf"]
         env:
-          - name: GITHUB_LOGIN_CLIENT_ID
-            valueFrom:
-              secretKeyRef:
-                name: secrets
-                key: provendocs.github.login.client.id
-
-          - name: GITHUB_LOGIN_CLIENT_SECRET
-            valueFrom:
-              secretKeyRef:
-                name: secrets
-                key: provendocs.github.login.client.secret
-
           - name: GITHUB_LOGIN_AUTH_CALLBACK
             valueFrom:
               configMapKeyRef:
-                name: env-parameters
+                name: provendocs-{{ .Release.Name }}-configmap
                 key: provendocs.github.login.auth.callback
-
-          - name: GITHUB_SIGNUP_CLIENT_ID
-            valueFrom:
-              secretKeyRef:
-                name: secrets
-                key: provendocs.github.signup.client.id
-
-          - name: GITHUB_SIGNUP_CLIENT_SECRET
-            valueFrom:
-              secretKeyRef:
-                name: secrets
-                key: provendocs.github.signup.client.secret
 
           - name: GITHUB_SIGNUP_CALLBACK
             valueFrom:
               configMapKeyRef:
-                name: env-parameters
+                name: provendocs-{{ .Release.Name }}-configmap
                 key: provendocs.github.signup.callback
 
           - name: GOOGLE_AUTH_CALLBACK
             valueFrom:
               configMapKeyRef:
-                name: env-parameters
+                name: provendocs-{{ .Release.Name }}-configmap
                 key: provendocs.google.auth.callback
 
           - name: GOOGLE_SIGNUP_CALLBACK
             valueFrom:
               configMapKeyRef:
-                name: env-parameters
+                name: provendocs-{{ .Release.Name }}-configmap
                 key: provendocs.google.signup.callback
 
           - name: PROVENDOCS_URI
             valueFrom:
               configMapKeyRef:
-                name: env-parameters
+                name: provendocs-{{ .Release.Name }}-configmap
                 key: provendocs.uri
 
           - name: USER_MODULE_URL
             valueFrom:
               configMapKeyRef:
-                name: env-parameters
+                name: provendocs-{{ .Release.Name }}-configmap
                 key: provendocs.user.module.url
                 
           - name: DOCS_URL
             valueFrom:
               configMapKeyRef:
-                name: env-parameters
+                name: provendocs-{{ .Release.Name }}-configmap
                 key: provendocs.docs.url
                 
           - name: API_URL
             valueFrom:
               configMapKeyRef:
-                name: env-parameters
+                name: provendocs-{{ .Release.Name }}-configmap
                 key: provendocs.api.url
 
           - name: INTERNAL_API_URL
             valueFrom:
               configMapKeyRef:
-                name: env-parameters
+                name: provendocs-{{ .Release.Name }}-configmap
                 key: provendocs.internal.api.url     
 
           - name: PROVENDOCS_ENV
             valueFrom:
               configMapKeyRef:
-                name: env-parameters
+                name: provendocs-{{ .Release.Name }}-configmap
                 key: provendocs.env    

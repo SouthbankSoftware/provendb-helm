@@ -6,7 +6,7 @@ metadata:
 data:
   mongodbcache.bind.ip: {{ .Values.mongodbcache.bindip | quote }}
   mongodbcache.port: {{ .Values.mongodbcache.port | quote }}
-
   tree.cachedb.uri: "mongodb://{{ .Values.mongodbcache.bindip }}:{{ .Values.mongodbcache.port }}"
   tree.host.port: "0.0.0.0:{{ .Values.tree.host.port }}"
   tree.treeenv: "dev"
+  tree.mongo.targetDB: {{ .Values.tree.targetDB }}

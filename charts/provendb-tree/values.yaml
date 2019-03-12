@@ -18,6 +18,8 @@ tree:
       cpu: 3000 #  1 CPUs  
   host:
     port: 10000
+  targetDBuri: "mongodb+srv://sbs:DBEnvy2016@mongogcp1-oexhg.gcp.mongodb.net"  
+  targetDB: "provendocs"  
 
 mongodbcache:
   bindip: 127.0.0.1

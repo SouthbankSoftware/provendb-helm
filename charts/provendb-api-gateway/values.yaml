@@ -8,23 +8,8 @@ image:
 host: 
   port: 0.0.0.0:8080
 
-tree:
-  host:
-    port: 10000
-
-user:
-  module:
-    host:
-      port: usermodule-grpc-service.staging.svc.cluster.local:1377
-    domain:
-      name: usermodule.provendb.com
-
 domain:
   name: apigateway.provendb.com
 
 allowed:
-  urls: http://provendocs.com/login
-
-concierge:
-  host:
-    port: concierge-service.staging.svc.cluster.local:10002         
+  urls: http://provendocs.com/login       

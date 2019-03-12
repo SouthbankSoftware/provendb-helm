@@ -47,8 +47,8 @@ spec:
                 configMapKeyRef:
                   name: provendb-concierge-{{ .Release.Name }}-configmap
                   key: concierge.tree.host.port
-            - name: CONCIERGE_JAEGER_AGENT_HOST_PORT
-              valueFrom:
-                configMapKeyRef:
-                  name: provendb-concierge-{{ .Release.Name }}-configmap
-                  key: jaeger-agent.host.port
+            # - name: CONCIERGE_JAEGER_AGENT_HOST_PORT
+            #   valueFrom:
+            #     configMapKeyRef:
+            #       name: provendb-concierge-{{ .Release.Name }}-configmap
+            #       key: jaeger-agent.host.port

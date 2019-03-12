@@ -2,7 +2,7 @@ replicaCount: 1
 istioSidecarInject: true
 
 http:
-  port: 8080
+  port: 8888
 
 image:
   repository: asia.gcr.io/provendb/provendocs
@@ -13,3 +13,4 @@ docs:
 
 env: prod
 
+#optional when installing the parent chart

@@ -2,19 +2,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: provendb-api-gateway-{{ .Release.Name }}
+  name: provendb-api-gateway-{{ .Release.Name }}-configmap
   namespace: {{ .Release.Namespace }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: provendb-api-gateway-{{ .Release.Name }}
+      app: provendb-api-gateway-{{ .Release.Name }}-configmap
   template:
     metadata:
       annotations:
         sidecar.istio.io/inject: {{ .Values.istioSidecarInject | quote }} 
       labels:
-        app: provendb-api-gateway-{{ .Release.Name }}
+        app: provendb-api-gateway-{{ .Release.Name }}-configmap
     spec:
       containers:
       - name: api-gateway
@@ -48,40 +48,40 @@ spec:
           - name: API_GATEWAY_HOST_PORT
             valueFrom:
               configMapKeyRef:
-                name: provendb-api-gateway-{{ .Release.Name }}
+                name: provendb-api-gateway-{{ .Release.Name }}-configmap
                 key: apigateway.host.port
           - name: API_GATEWAY_TREE_HOST_PORT
             valueFrom:
               configMapKeyRef:
-                name: provendb-api-gateway-{{ .Release.Name }}
+                name: provendb-api-gateway-{{ .Release.Name }}-configmap
                 key: apigateway.tree.host.port
           - name: API_GATEWAY_USER_MODULE_HOST_PORT
             valueFrom:
               configMapKeyRef:
-                name: provendb-api-gateway-{{ .Release.Name }}
+                name: provendb-api-gateway-{{ .Release.Name }}-configmap
                 key: apigateway.user.module.host.port
           - name: API_GATEWAY_OAUTH_REDIRECT_HOST
             valueFrom:
               configMapKeyRef:
-                name: provendb-api-gateway-{{ .Release.Name }}
+                name: provendb-api-gateway-{{ .Release.Name }}-configmap
                 key: apigateway.oauth.redirect.host
           - name: API_GATEWAY_USER_MODULE_DOMAIN_NAME
             valueFrom:
               configMapKeyRef:
-                name: provendb-api-gateway-{{ .Release.Name }}
+                name: provendb-api-gateway-{{ .Release.Name }}-configmap
                 key: apigateway.user.module.domain.name
           - name: API_GATEWAY_DOMAIN_NAME
             valueFrom:
               configMapKeyRef:
-                name: provendb-api-gateway-{{ .Release.Name }}
+                name: provendb-api-gateway-{{ .Release.Name }}-configmap
                 key: apigateway.domain.name      
           - name: API_GATEWAY_ALLOWED_URLS
             valueFrom:
               configMapKeyRef:
-                name: provendb-api-gateway-{{ .Release.Name }}
+                name: provendb-api-gateway-{{ .Release.Name }}-configmap
                 key: apigateway.allowed.urls
           - name: API_GATEWAY_CONCIERGE_HOST_PORT      
             valueFrom:
               configMapKeyRef:
-                name: provendb-api-gateway-{{ .Release.Name }}
+                name: provendb-api-gateway-{{ .Release.Name }}-configmap
                 key: apigateway.concierge.host.port

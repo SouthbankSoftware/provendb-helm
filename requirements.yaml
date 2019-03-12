@@ -1,34 +1,45 @@
 dependencies:
   - name: provendb-proxy
-    version: 0.2.0
+    version: 1.0.0
     condition: provendb-proxy.enabled
+    repository: "gs://provendb-helm-charts"
+    import-values:
+      - child: proxy
+        parent: provendocs.proxy
   - name: provendb-tree
-    version: 0.1.0
-    condition: provendb-tree.enabled  
+    version: 1.0.0
+    condition: provendb-tree.enabled, provendb-proxy.enabled
+    repository: "gs://provendb-helm-charts"
     import-values:
       - child: tree.host
         parent: provendb-api-gateway.tree.host  
       - child: tree.host
         parent: provendb-concierge.tree.host    
+      - child: tree.host
+        parent: provendb-proxy.tree.host  
   - name: provendb-user
-    version: 0.1.0
-    condition: provendb-user.enabled  
+    version: 1.0.0
+    condition: provendb-user.enabled 
+    repository: "gs://provendb-helm-charts" 
     import-values:
       - child: grpc
         parent: provendb-api-gateway.grpc
       - child: domain
         parent: provendocs.user.domain  
   - name: provendb-api-gateway
-    version: 0.1.0
-    condition: provendb-api-gateway.enabled  
+    version: 1.0.0
+    condition: provendb-api-gateway.enabled, provendb-user.enabled  
+    repository: "gs://provendb-helm-charts"
     import-values:
       - child: domain
         parent: provendocs.apigateway.domain 
       - child: host
         parent: provendocs.apigateway.host
   - name: provendb-concierge
-    version: 0.1.0
-    condition: provendb-concierge.enabled  
+    version: 1.0.0
+    condition: provendb-concierge.enabled, provendb-proxy.enabled 
+    repository: "gs://provendb-helm-charts"
   - name: provendocs
-    version: 0.1.0
-    condition: provendocs.enabled
+    version: 1.0.0
+    condition: provendocs.enabled, provendb-proxy.enabled, provendb-api-gateway.enabled  
+    repository: "gs://provendb-helm-charts"

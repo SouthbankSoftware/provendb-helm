@@ -103,11 +103,26 @@ spec:
               configMapKeyRef:
                 name: provendb-tree-{{ .Release.Name }}-configmap
                 key: tree.host.port
+          - name: mongoUri
+            valueFrom:
+              secretKeyRef:
+                name: provendb-tree-{{ .Release.Name }}-secret
+                key: tree.mongo.targetDB.uri      
           - name: TREE_ENV
             valueFrom:
               configMapKeyRef:
                 name: provendb-tree-{{ .Release.Name }}-configmap
                 key: tree.treeenv
+          - name: mongoTargetDB
+            valueFrom:
+              configMapKeyRef:
+                name: provendb-tree-{{ .Release.Name }}-configmap
+                key: tree.mongo.targetDB    
+          # - name: TREE_JAEGER_AGENT_HOST_PORT   
+          #   valueFrom:
+          #     configMapKeyRef:
+          #       name: env-parameters
+          #       key: jaeger-agent.host.port      
   volumeClaimTemplates:
   - metadata:
       name: mongodb-cache-data
