@@ -1,14 +1,14 @@
 provendb-proxy:
-  enabled: true
+  enabled: false
 
 provendb-tree:
   enabled: true
 
 provendb-user:
-  enabled: true
+  enabled: false
   
 provendb-api-gateway:
-  enabled: true
+  enabled: false
   oauth:
     redirect:
       host: apigateway.provendb.com
@@ -21,7 +21,7 @@ provendb-api-gateway:
     urls: http://provendocs.com/login
 
 provendocs:
-  enabled: true
+  enabled: false
   env: prod
 
 provendb-concierge:
@@ -29,7 +29,19 @@ provendb-concierge:
     port: 10002
   prometheus:
     port: 10003  
-  enabled: true
+  enabled: false
+
+provendb-io:
+  enabled: false 
+  grpc:
+    port: 10004
+  prometheus:
+    port: 10005 
+
+provendb-ui:
+  enabled: false
+  http:
+    port: 8088
 
 
 global:

@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: provendb-ui-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: provendb-ui-{{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: {{ .Values.istioSidecarInject | quote }} 
+      labels:
+        app: provendb-ui-{{ .Release.Name }}
+    spec:
+      containers:
+      - name: provendb-ui
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: Always
+        # resources:
+        #   requests:
+        #     memory: "2Gi" # 4 GB
+        #     cpu: "1000m"  # 1 CPUs
+        #   limits:
+        #     memory: "4Gi" # 4 GB
+        #     cpu: "2000" #  1 CPUs    
+        livenessProbe:
+          httpGet:
+              path: /
+              port: {{ .Values.http.port }}
+          initialDelaySeconds: 5 #wait this period after starting fist time
+          periodSeconds: 30  # polling interval
+          timeoutSeconds: 60    # wish to receive response within this time period
+        readinessProbe: 
+          httpGet:
+              path: /
+              port: {{ .Values.http.port }}
+          initialDelaySeconds: 5 #wait this period after staring fist time
+          periodSeconds: 30    # polling interval
+          timeoutSeconds: 60 
+        ports:
+        - containerPort: {{ .Values.http.port }}
+        command: ["/bin/ash"]
+        args: ["-c","node -- bin/www"] 
+        # args: ["-c", "tail -f /etc/resolv.conf"]
+        env:
+          - name: USER_MODULE_URL
+            valueFrom:
+              configMapKeyRef:
+                name: provendb-ui-{{ .Release.Name }}-configmap
+                key: user.module.url
+                
+          - name: PROVENDB_URL
+            valueFrom:
+              configMapKeyRef:
+                name: provendb-ui-{{ .Release.Name }}-configmap
+                key: provendb.url
+                
+          - name: API_URL
+            valueFrom:
+              configMapKeyRef:
+                name: provendb-ui-{{ .Release.Name }}-configmap
+                key: api.url
+
+          - name: INTERNAL_API_URL
+            valueFrom:
+              configMapKeyRef:
+                name: provendb-ui-{{ .Release.Name }}-configmap
+                key: internal.api.url

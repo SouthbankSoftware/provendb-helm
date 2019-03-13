@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: provendb-io-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: provendb-io-{{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: {{ .Values.prometheus.enable | quote }}
+        prometheus.io/port: {{ .Values.prometheus.port | quote }}
+        sidecar.istio.io/inject: {{ .Values.istioSidecarInject | quote }} 
+      labels:
+        app: provendb-io-{{ .Release.Name }}
+    spec:
+      containers:
+        - name: io
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: Always
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.grpc.port }}
+            initialDelaySeconds: 2
+            periodSeconds: 5
+            timeoutSeconds: 30
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.grpc.port }}
+            initialDelaySeconds: 2
+            periodSeconds: 5
+            timeoutSeconds: 30
+          ports:
+            - containerPort: {{ .Values.grpc.port }}
+            - containerPort: {{ .Values.prometheus.port }}
+          env:
+            - name: IO_USER_DB_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: provendb-io-{{ .Release.Name }}-configmap
+                  key: usermodule.mongo.uri
+            # - name: IO_JAEGER_AGENT_HOST_PORT
+            #   valueFrom:
+            #     configMapKeyRef:
+            #       name: provendb-io-{{ .Release.Name }}-configmap
+            #       key: jaeger-agent.host.port

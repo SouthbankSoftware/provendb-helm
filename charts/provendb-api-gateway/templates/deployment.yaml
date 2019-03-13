@@ -2,19 +2,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: provendb-api-gateway-{{ .Release.Name }}-configmap
+  name: provendb-api-gateway-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: provendb-api-gateway-{{ .Release.Name }}-configmap
+      app: provendb-api-gateway-{{ .Release.Name }}
   template:
     metadata:
       annotations:
         sidecar.istio.io/inject: {{ .Values.istioSidecarInject | quote }} 
       labels:
-        app: provendb-api-gateway-{{ .Release.Name }}-configmap
+        app: provendb-api-gateway-{{ .Release.Name }}
     spec:
       containers:
       - name: api-gateway

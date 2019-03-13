@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: provendb-ui-{{ .Release.Name }}-configmap
+  namespace: {{ .Release.Namespace }}
+data:
+  user.module.url: {{ .Values.user.domain.name }}
+  provendb.url: {{ .Values.url }}
+  api.url: {{ .Values.apigateway.domain.name }}
+  internal.api.url: api-gateway-{{ .Release.Name }}-service.{{ .Release.Namespace }}.svc.cluster.local:{{ template "provendb-ui.apigatewayport" . }}

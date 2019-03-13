@@ -5,5 +5,5 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data:
   concierge.state.db.uri: "mongodb+srv://provendb-concierge:x8dZQtma@mongogcp1-oexhg.gcp.mongodb.net"
-  concierge.tree.host.port:  provendb-tree-{{ .Release.Name }}-service.{{ .Release.Namespace }}.svc.cluster.local:{{  .Values.tree.host.port }}
+  concierge.tree.host.port:  provendb-tree-service.{{ .Release.Namespace }}.svc.cluster.local:{{  .Values.tree.host.port }}
   jaeger-agent.host.port: {{ .Values.global.jaegeragent.host.port }}
