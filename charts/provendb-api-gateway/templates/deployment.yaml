@@ -55,6 +55,11 @@ spec:
               configMapKeyRef:
                 name: provendb-api-gateway-{{ .Release.Name }}-configmap
                 key: apigateway.tree.host.port
+          - name: API_GATEWAY_USER_DB_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: provendb-user-{{ .Release.Name }}-configmap
+                  key: usermodule.mongo.uri
           - name: API_GATEWAY_USER_MODULE_HOST_PORT
             valueFrom:
               configMapKeyRef:
