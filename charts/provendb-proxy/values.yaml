@@ -1,12 +1,16 @@
 replicaCount: 1
+istioSidecarInject: true
 
 service:
   type: LoadBalancer
   port: 27018
 
 proxy:
+  image:
+    repository: asia.gcr.io/provendb/provendb-proxy
+    tag: latest
   mongodb:
-    uri: "mongodb+srv://sbs:DBEnvy2016@provendb-staging-vki7g.gcp.mongodb.net/provendocs"
+    uri: "mongodb+srv://sbs:DBEnvy2016@mongogcp1-oexhg.gcp.mongodb.net/provendocs-helm"
 
   sidecarmongodb:
     port: 27017
@@ -14,11 +18,6 @@ proxy:
 
   port: 27018
   userDatabases: provendocs
-
-  treeservice:
-    host: "treeservice-service.staging.svc.cluster.local"
-    port: 10000
-    dbinstance: "local-dev"
 
   sslEnabled: "true"
   maxConnections: 10
@@ -30,4 +29,9 @@ proxy:
     password: "password"
   p12:
     filePassword: "provendb"
+
+tree:
+  host:
+    port: 10000
+  dbinstance: "local-dev"    
 

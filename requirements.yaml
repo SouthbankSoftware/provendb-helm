@@ -54,7 +54,9 @@ dependencies:
   - name: provendb-io
     version: 1.0.0
     condition: provendb-io.enabled, provendb-user.enabled
+    repository: "gs://provendb-helm-charts"
   - name: provendb-ui
     version: 1.0.0
     condition: provendb-ui.enabled, provendb-api-gateway.enabled, provendb-user.enabled
+    repository: "gs://provendb-helm-charts"
 

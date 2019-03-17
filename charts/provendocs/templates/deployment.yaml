@@ -2,19 +2,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: provendocs-{{ .Release.Name }}
+  name: provendocs
   namespace: {{ .Release.Namespace }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: provendocs-{{ .Release.Name }}
+      app: provendocs
   template:
     metadata:
       annotations:
         sidecar.istio.io/inject: {{ .Values.istioSidecarInject | quote }} 
       labels:
-        app: provendocs-{{ .Release.Name }}
+        app: provendocs
     spec:
       containers:
       - name: provendocs
@@ -43,59 +43,59 @@ spec:
           - name: GITHUB_LOGIN_AUTH_CALLBACK
             valueFrom:
               configMapKeyRef:
-                name: provendocs-{{ .Release.Name }}-configmap
+                name: provendocsconfigmap
                 key: provendocs.github.login.auth.callback
 
           - name: GITHUB_SIGNUP_CALLBACK
             valueFrom:
               configMapKeyRef:
-                name: provendocs-{{ .Release.Name }}-configmap
+                name: provendocsconfigmap
                 key: provendocs.github.signup.callback
 
           - name: GOOGLE_AUTH_CALLBACK
             valueFrom:
               configMapKeyRef:
-                name: provendocs-{{ .Release.Name }}-configmap
+                name: provendocsconfigmap
                 key: provendocs.google.auth.callback
 
           - name: GOOGLE_SIGNUP_CALLBACK
             valueFrom:
               configMapKeyRef:
-                name: provendocs-{{ .Release.Name }}-configmap
+                name: provendocsconfigmap
                 key: provendocs.google.signup.callback
 
           - name: PROVENDOCS_URI
             valueFrom:
               configMapKeyRef:
-                name: provendocs-{{ .Release.Name }}-configmap
+                name: provendocsconfigmap
                 key: provendocs.uri
 
           - name: USER_MODULE_URL
             valueFrom:
               configMapKeyRef:
-                name: provendocs-{{ .Release.Name }}-configmap
+                name: provendocsconfigmap
                 key: provendocs.user.module.url
                 
           - name: DOCS_URL
             valueFrom:
               configMapKeyRef:
-                name: provendocs-{{ .Release.Name }}-configmap
+                name: provendocsconfigmap
                 key: provendocs.docs.url
                 
           - name: API_URL
             valueFrom:
               configMapKeyRef:
-                name: provendocs-{{ .Release.Name }}-configmap
+                name: provendocsconfigmap
                 key: provendocs.api.url
 
           - name: INTERNAL_API_URL
             valueFrom:
               configMapKeyRef:
-                name: provendocs-{{ .Release.Name }}-configmap
+                name: provendocsconfigmap
                 key: provendocs.internal.api.url     
 
           - name: PROVENDOCS_ENV
             valueFrom:
               configMapKeyRef:
-                name: provendocs-{{ .Release.Name }}-configmap
+                name: provendocsconfigmap
                 key: provendocs.env    

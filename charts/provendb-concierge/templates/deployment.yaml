@@ -1,13 +1,13 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: provendb-concierge-{{ .Release.Name }}
+  name: provendb-concierge
   namespace: {{ .Release.Namespace }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: provendb-concierge-{{ .Release.Name }}
+      app: provendb-concierge
   template:
     metadata:
       annotations:
@@ -15,7 +15,7 @@ spec:
         prometheus.io/port: {{ .Values.prometheus.port | quote }}
         sidecar.istio.io/inject: {{ .Values.istioSidecarInject | quote }} 
       labels:
-        app: provendb-concierge-{{ .Release.Name }}
+        app: provendb-concierge
     spec:
       containers:
         - name: concierge
@@ -40,15 +40,15 @@ spec:
             - name: CONCIERGE_STATE_DB_URI
               valueFrom:
                 configMapKeyRef:
-                  name: provendb-concierge-{{ .Release.Name }}-configmap
+                  name: provendb-concierge-configmap
                   key: concierge.state.db.uri
             - name: CONCIERGE_TREE_HOST_PORT
               valueFrom:
                 configMapKeyRef:
-                  name: provendb-concierge-{{ .Release.Name }}-configmap
+                  name: provendb-concierge-configmap
                   key: concierge.tree.host.port
             # - name: CONCIERGE_JAEGER_AGENT_HOST_PORT
             #   valueFrom:
             #     configMapKeyRef:
-            #       name: provendb-concierge-{{ .Release.Name }}-configmap
+            #       name: provendb-concierge-configmap
             #       key: jaeger-agent.host.port

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: provendb-tree-{{ .Release.Name }}-configmap
+  name: provendb-tree-configmap
   namespace: {{ .Release.Namespace }}
 data:
   mongodbcache.bind.ip: {{ .Values.mongodbcache.bindip | quote }}

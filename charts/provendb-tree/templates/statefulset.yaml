@@ -4,7 +4,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: provendb-tree-{{ .Release.Name }}-statefulset
+  name: provendb-tree-statefulset
   namespace: {{ .Release.Namespace }}
 spec:
   serviceName: provendb-tree-service
@@ -64,12 +64,12 @@ spec:
           - name: MONGODBCACHE_BIND_IP
             valueFrom:
               configMapKeyRef:
-                name: provendb-tree-{{ .Release.Name }}-configmap
+                name: provendb-tree-configmap
                 key: mongodbcache.bind.ip
           - name: MONGODBCACHE_PORT
             valueFrom:
               configMapKeyRef:
-                name: provendb-tree-{{ .Release.Name }}-configmap
+                name: provendb-tree-configmap
                 key: mongodbcache.port
       - name: tree-service
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
@@ -96,27 +96,27 @@ spec:
           - name: TREE_CACHE_DB_URI
             valueFrom:
               configMapKeyRef:
-                name: provendb-tree-{{ .Release.Name }}-configmap
+                name: provendb-tree-configmap
                 key: tree.cachedb.uri
           - name: TREE_HOST_PORT
             valueFrom:
               configMapKeyRef:
-                name: provendb-tree-{{ .Release.Name }}-configmap
+                name: provendb-tree-configmap
                 key: tree.host.port
           - name: mongoUri
             valueFrom:
               secretKeyRef:
-                name: provendb-tree-{{ .Release.Name }}-secret
+                name: provendb-tree-secret
                 key: tree.mongo.targetDB.uri      
           - name: TREE_ENV
             valueFrom:
               configMapKeyRef:
-                name: provendb-tree-{{ .Release.Name }}-configmap
+                name: provendb-tree-configmap
                 key: tree.treeenv
           - name: mongoTargetDB
             valueFrom:
               configMapKeyRef:
-                name: provendb-tree-{{ .Release.Name }}-configmap
+                name: provendb-tree-configmap
                 key: tree.mongo.targetDB    
           # - name: TREE_JAEGER_AGENT_HOST_PORT   
           #   valueFrom:

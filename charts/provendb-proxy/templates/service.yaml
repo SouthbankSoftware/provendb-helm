@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: proxy-{{ .Release.Name }}-service
+  name: provendb-proxy-{{ .Release.Name }}-service
   namespace: {{ .Release.Namespace }}
 spec:
   selector:
-    app: proxy-{{ .Release.Name }}
+    app: provendb-proxy-{{ .Release.Name }}
   ports:
-    - name: proxy-{{ .Release.Name }}-port
+    - name: provendb-proxy-{{ .Release.Name }}-port
       port: {{ .Values.service.port }}
       targetPort: {{ .Values.proxy.port }} 
       protocol: TCP

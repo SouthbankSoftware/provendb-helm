@@ -2,19 +2,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: provendb-user-{{ .Release.Name }}
+  name: provendb-user
   namespace: {{ .Release.Namespace }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: provendb-user-{{ .Release.Name }}
+      app: provendb-user
   template:
     metadata:
       annotations:
         sidecar.istio.io/inject: {{ .Values.istioSidecarInject | quote }} 
       labels:
-        app: provendb-user-{{ .Release.Name }}
+        app: provendb-user
     spec:
       containers:
       - name: usermodule
@@ -43,42 +43,42 @@ spec:
           - name: USER_MONGO_URI
             valueFrom:
               configMapKeyRef:
-                name: provendb-user-{{ .Release.Name }}-configmap
+                name: provendb-user-configmap
                 key: usermodule.mongo.uri
           - name: USER_GRPC_HOST_PORT
             valueFrom:
               configMapKeyRef:
-                name: provendb-user-{{ .Release.Name }}-configmap
+                name: provendb-user-configmap
                 key: usermodule.grpc.host.port
           - name: USER_HTTP_HOST_PORT
             valueFrom:
               configMapKeyRef:
-                name: provendb-user-{{ .Release.Name }}-configmap
+                name: provendb-user-configmap
                 key: usermodule.http.host.port
           - name: USER_HTTP_DOMAIN_NAME
             valueFrom:
               configMapKeyRef:
-                name: provendb-user-{{ .Release.Name }}-configmap
+                name: provendb-user-configmap
                 key: usermodule.domain.name
           - name: GOOGLE_OAUTH_CLIENT_ID
             valueFrom:
               secretKeyRef:
-                name: provendb-user-{{ .Release.Name }}-secret
+                name: provendb-user-secret
                 key: usermodule.google.oauth.clientid
           - name: GOOGLE_OAUTH_CLIENT_SECRET
             valueFrom:
               secretKeyRef:
-                name: provendb-user-{{ .Release.Name }}-secret
+                name: provendb-user-secret
                 key: usermodule.google.oauth.secret
 
           - name: GITHUB_OAUTH_CLIENT_ID
             valueFrom:
               secretKeyRef:
-                name: provendb-user-{{ .Release.Name }}-secret
+                name: provendb-user-secret
                 key: usermodule.github.oauth.clientid
                 
           - name: GITHUB_OAUTH_CLIENT_SECRET
             valueFrom:
               secretKeyRef:
-                name: provendb-user-{{ .Release.Name }}-secret
+                name: provendb-user-secret
                 key: usermodule.github.oauth.secret

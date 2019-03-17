@@ -1,13 +1,13 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: provendb-io-{{ .Release.Name }}
+  name: provendb-io
   namespace: {{ .Release.Namespace }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: provendb-io-{{ .Release.Name }}
+      app: provendb-io
   template:
     metadata:
       annotations:
@@ -15,7 +15,7 @@ spec:
         prometheus.io/port: {{ .Values.prometheus.port | quote }}
         sidecar.istio.io/inject: {{ .Values.istioSidecarInject | quote }} 
       labels:
-        app: provendb-io-{{ .Release.Name }}
+        app: provendb-io
     spec:
       containers:
         - name: io
@@ -40,10 +40,10 @@ spec:
             - name: IO_USER_DB_URI
               valueFrom:
                 configMapKeyRef:
-                  name: provendb-io-{{ .Release.Name }}-configmap
+                  name: provendb-io-configmap
                   key: usermodule.mongo.uri
             # - name: IO_JAEGER_AGENT_HOST_PORT
             #   valueFrom:
             #     configMapKeyRef:
-            #       name: provendb-io-{{ .Release.Name }}-configmap
+            #       name: provendb-io-configmap
             #       key: jaeger-agent.host.port

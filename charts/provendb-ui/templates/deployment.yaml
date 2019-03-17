@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: provendb-ui-{{ .Release.Name }}
+  name: provendb-ui
   namespace: {{ .Release.Namespace }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: provendb-ui-{{ .Release.Name }}
+      app: provendb-ui
   template:
     metadata:
       annotations:
         sidecar.istio.io/inject: {{ .Values.istioSidecarInject | quote }} 
       labels:
-        app: provendb-ui-{{ .Release.Name }}
+        app: provendb-ui
     spec:
       containers:
       - name: provendb-ui
@@ -49,23 +49,23 @@ spec:
           - name: USER_MODULE_URL
             valueFrom:
               configMapKeyRef:
-                name: provendb-ui-{{ .Release.Name }}-configmap
+                name: provendb-ui-configmap
                 key: user.module.url
                 
           - name: PROVENDB_URL
             valueFrom:
               configMapKeyRef:
-                name: provendb-ui-{{ .Release.Name }}-configmap
+                name: provendb-ui-configmap
                 key: provendb.url
                 
           - name: API_URL
             valueFrom:
               configMapKeyRef:
-                name: provendb-ui-{{ .Release.Name }}-configmap
+                name: provendb-ui-configmap
                 key: api.url
 
           - name: INTERNAL_API_URL
             valueFrom:
               configMapKeyRef:
-                name: provendb-ui-{{ .Release.Name }}-configmap
+                name: provendb-ui-configmap
                 key: internal.api.url

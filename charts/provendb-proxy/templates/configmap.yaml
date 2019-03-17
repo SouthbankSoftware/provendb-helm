@@ -1,17 +1,17 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: proxy-{{ .Release.Name }}-configmap
+  name: provendb-proxy-{{ .Release.Name }}-configmap
   namespace: {{ .Release.Namespace }}
 data:
-  proxy.mongodb.ssl: {{ .Values.proxy.mongodb.ssl | quote }}
+  proxy.mongodb.ssl: {{ .Values.proxy.sslEnabled | quote }}
   
   proxy.port: {{ .Values.proxy.port | quote }}
   proxy.userDatabases: {{ .Values.proxy.userDatabases | quote }}
   proxy.ssl.enable: {{ .Values.proxy.sslEnabled | quote }}
-  proxy.treeservice.host: {{ .Values.proxy.treeservice.host | quote }}
-  proxy.treeservice.port: {{ .Values.proxy.treeservice.port | quote }}
-  proxy.treeservice.dbinstance: {{ .Values.proxy.treeservice.dbinstance | quote }}
+  proxy.treeservice.host: provendb-tree-service.{{ .Release.Namespace }}.svc.cluster.local
+  proxy.treeservice.port: {{  .Values.tree.host.port | quote }}
+  proxy.treeservice.dbinstance: {{ .Values.tree.dbinstance | quote }}
   proxy.max.connections: {{ .Values.proxy.maxConnections | quote }}
   proxy.max.threads: {{ .Values.proxy.maxThreads | quote }}
   proxy.auth.enabled: {{ .Values.proxy.auth.enabled | quote }}

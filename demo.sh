@@ -20,7 +20,7 @@ helm gcs push provendb-api-gateway-1.0.0.tgz provendb-helm
 helm repo update
 
 #7. Repeat the same for other modules
-helm package charts/provendb-concierge && helm gcs push provendb-concierge-1.0.0.tgz provendb-helm && helm package charts/provendb-proxy && helm gcs push provendb-proxy-1.0.0.tgz provendb-helm && helm package charts/provendb-tree && helm gcs push provendb-tree-1.0.0.tgz provendb-helm && helm package charts/provendb-user && helm gcs push provendb-user-1.0.0.tgz provendb-helm && helm package charts/provendocs && helm gcs push provendocs-1.0.0.tgz provendb-helm && helm repo update
+helm package charts/provendb-concierge && helm gcs push provendb-concierge-1.0.0.tgz provendb-helm && helm package charts/provendb-proxy && helm gcs push provendb-proxy-1.0.0.tgz provendb-helm && helm package charts/provendb-tree && helm gcs push provendb-tree-1.0.0.tgz provendb-helm && helm package charts/provendb-user && helm gcs push provendb-user-1.0.0.tgz provendb-helm && helm package charts/provendocs && helm gcs push provendocs-1.0.0.tgz provendb-helm &&  helm package charts/provendb-io && helm gcs push provendb-io-1.0.0.tgz provendb-helm &&  helm package charts/provendb-ui && helm gcs push provendb-ui-1.0.0.tgz provendb-helm && helm repo update
 
 #8. Clean local directory
 rm -rf *.tgz

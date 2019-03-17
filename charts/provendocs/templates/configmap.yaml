@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: provendocs-{{ .Release.Name }}-configmap
+  name: provendocsconfigmap
   namespace: {{ .Release.Namespace }}
 data:
   provendocs.github.login.auth.callback: "http://{{ .Values.docs.url }}/auth/github/callback"
@@ -12,8 +12,8 @@ data:
 
   provendocs.user.module.url: {{ .Values.user.domain.name }}
   provendocs.docs.url: {{ .Values.docs.url }}
-  # provendocs.uri: "mongodb://{{ .Values.proxy.auth.username}}:{{ .Values.proxy.auth.password }}@provendb-proxy-{{ .Release.Name }}-service.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.proxy.port }}/{{ template "dbfromuri" . }}"
+  # provendocs.uri: "mongodb://{{ .Values.proxy.auth.username}}:{{ .Values.proxy.auth.password }}@provendb-proxy-service.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.proxy.port }}/{{ template "dbfromuri" . }}"
   provendocs.uri: "mongodb://admin:password@proxy.provendb.com:27018/provendocs"
   provendocs.api.url: {{ .Values.apigateway.domain.name }}
-  provendocs.internal.api.url: provendb-api-gateway-{{ .Release.Name }}-service.{{ .Release.Namespace }}.svc.cluster.local:{{ template "apigatewayport" . }}
+  provendocs.internal.api.url: provendb-api-gatewayservice.{{ .Release.Namespace }}.svc.cluster.local:{{ template "apigatewayport" . }}
   provendocs.env: {{ .Values.env }}

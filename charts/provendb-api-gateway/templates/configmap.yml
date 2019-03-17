@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: provendb-api-gateway-{{ .Release.Name }}-configmap
+  name: provendb-api-gateway-configmap
   namespace: {{ .Release.Namespace }}
 data:
     apigateway.host.port: {{ .Values.host.port | quote }}
     apigateway.tree.host.port:  provendb-tree-service.{{ .Release.Namespace }}.svc.cluster.local:{{  .Values.tree.host.port }}
-    apigateway.user.module.host.port: provendb-user-{{ .Release.Name }}-service.{{ .Release.Namespace }}.svc.cluster.local:{{  .Values.grpc.port }}
+    apigateway.user.module.host.port: provendb-user-service.{{ .Release.Namespace }}.svc.cluster.local:{{  .Values.grpc.port }}
     apigateway.oauth.redirect.host: {{ .Values.oauth.redirect.host }}
     apigateway.user.module.domain.name: {{ .Values.user.domain.name }}
     apigateway.domain.name: {{ .Values.domain.name }}

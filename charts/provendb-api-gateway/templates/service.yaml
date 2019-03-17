@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: provendb-api-gateway-{{ .Release.Name }}-service
+  name: provendb-api-gateway-service
   namespace: {{ .Release.Namespace }}
 spec:
   selector:
-    app: provendb-api-gateway-{{ .Release.Name }}
+    app: provendb-api-gateway
   ports:
     - name: http-port
       port: {{ template "port" . }}
