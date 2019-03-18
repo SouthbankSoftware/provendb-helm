@@ -4,4 +4,4 @@ metadata:
   name: provendb-io-configmap
   namespace: {{ .Release.Namespace }}
 data:
-  usermodule.mongo.uri: {{ .Values.mongo.uri | quote }}
+  usermodule.mongo.uri: {{ .Values.user.mongo.uri | quote }}

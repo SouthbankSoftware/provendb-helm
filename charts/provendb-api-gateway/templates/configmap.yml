@@ -12,3 +12,4 @@ data:
     apigateway.domain.name: {{ .Values.domain.name }}
     apigateway.allowed.urls: {{ .Values.allowed.urls }}
     apigateway.concierge.host.port: "concierge-service.staging.svc.cluster.local:10002"
+    apigateway.user.module.mongo.uri: {{ .Values.user.mongo.uri | quote }}

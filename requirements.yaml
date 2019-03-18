@@ -29,7 +29,9 @@ dependencies:
       - child: domain
         parent: provendb-ui.user.domain  
       - child: mongo
-        parent: provendb-io.mongo
+        parent: provendb-io.user.mongo
+      - child: mongo
+        parent: provendb-api-gateway.user.mongo
   - name: provendb-api-gateway
     version: 1.0.0
     condition: provendb-api-gateway.enabled, provendb-user.enabled, provendb-tree.enabled  
