@@ -11,5 +11,5 @@ data:
     apigateway.user.module.domain.name: {{ .Values.user.domain.name }}
     apigateway.domain.name: {{ .Values.domain.name }}
     apigateway.allowed.urls: {{ .Values.allowed.urls }}
-    apigateway.concierge.host.port: "concierge-service.staging.svc.cluster.local:10002"
+    apigateway.concierge.host.port: provendb-concierge-service.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.concierge.grpc.port }}
     apigateway.user.module.mongo.uri: {{ .Values.user.mongo.uri | quote }}

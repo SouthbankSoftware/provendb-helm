@@ -1,5 +1,8 @@
 provendb-proxy:
   enabled: true
+  parent: true #Don't change this. This will be used to decide if proxy service should bind to an existing static IP or should be allocated a new one
+  externalIpStaging: "35.189.19.35" #static ip. If running multiple helm releases at once, the IP needs to change
+  externalIpProduction: ""
 
 provendb-tree:
   enabled: true

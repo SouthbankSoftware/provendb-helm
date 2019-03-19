@@ -32,6 +32,8 @@ dependencies:
         parent: provendb-io.user.mongo
       - child: mongo
         parent: provendb-api-gateway.user.mongo
+      - child: mongo
+        parent: provendb-concierge.user.mongo  
   - name: provendb-api-gateway
     version: 1.0.0
     condition: provendb-api-gateway.enabled, provendb-user.enabled, provendb-tree.enabled  
@@ -44,11 +46,14 @@ dependencies:
       - child: host
         parent: provendocs.apigateway.host
       - child: host
-        parent: provendb-ui.apigateway.host  
+        parent: provendb-ui.apigateway.host    
   - name: provendb-concierge
     version: 1.0.0
-    condition: provendb-concierge.enabled, provendb-proxy.enabled 
+    condition: provendb-concierge.enabled, provendb-proxy.enabled, provendb-user.enabled
     repository: "gs://provendb-helm-charts"
+    import-values:
+      - child: grpc
+        parent: provendb-api-gateway.concierge.grpc.port
   - name: provendocs
     version: 1.0.0
     condition: provendocs.enabled, provendb-proxy.enabled, provendb-api-gateway.enabled  

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: provendocsconfigmap
+  name: provendocs-configmap
   namespace: {{ .Release.Namespace }}
 data:
   provendocs.github.login.auth.callback: "http://{{ .Values.docs.url }}/auth/github/callback"

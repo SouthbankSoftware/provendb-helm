@@ -11,3 +11,7 @@ grpc:
 prometheus:
   port: 10003  
   enable: true
+
+helmChartVersion: 1.0.0
+
+  

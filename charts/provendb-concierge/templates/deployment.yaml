@@ -47,6 +47,11 @@ spec:
                 configMapKeyRef:
                   name: provendb-concierge-configmap
                   key: concierge.tree.host.port
+            - name: CONCIERGE_HELM_CHART_VERSION
+              valueFrom:
+                configMapKeyRef:
+                  name: provendb-concierge-configmap
+                  key: concierge.helm.chart.version      
             # - name: CONCIERGE_JAEGER_AGENT_HOST_PORT
             #   valueFrom:
             #     configMapKeyRef:

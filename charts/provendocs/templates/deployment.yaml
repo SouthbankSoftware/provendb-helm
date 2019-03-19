@@ -43,59 +43,59 @@ spec:
           - name: GITHUB_LOGIN_AUTH_CALLBACK
             valueFrom:
               configMapKeyRef:
-                name: provendocsconfigmap
+                name: provendocs-configmap
                 key: provendocs.github.login.auth.callback
 
           - name: GITHUB_SIGNUP_CALLBACK
             valueFrom:
               configMapKeyRef:
-                name: provendocsconfigmap
+                name: provendocs-configmap
                 key: provendocs.github.signup.callback
 
           - name: GOOGLE_AUTH_CALLBACK
             valueFrom:
               configMapKeyRef:
-                name: provendocsconfigmap
+                name: provendocs-configmap
                 key: provendocs.google.auth.callback
 
           - name: GOOGLE_SIGNUP_CALLBACK
             valueFrom:
               configMapKeyRef:
-                name: provendocsconfigmap
+                name: provendocs-configmap
                 key: provendocs.google.signup.callback
 
           - name: PROVENDOCS_URI
             valueFrom:
               configMapKeyRef:
-                name: provendocsconfigmap
+                name: provendocs-configmap
                 key: provendocs.uri
 
           - name: USER_MODULE_URL
             valueFrom:
               configMapKeyRef:
-                name: provendocsconfigmap
+                name: provendocs-configmap
                 key: provendocs.user.module.url
                 
           - name: DOCS_URL
             valueFrom:
               configMapKeyRef:
-                name: provendocsconfigmap
+                name: provendocs-configmap
                 key: provendocs.docs.url
                 
           - name: API_URL
             valueFrom:
               configMapKeyRef:
-                name: provendocsconfigmap
+                name: provendocs-configmap
                 key: provendocs.api.url
 
           - name: INTERNAL_API_URL
             valueFrom:
               configMapKeyRef:
-                name: provendocsconfigmap
+                name: provendocs-configmap
                 key: provendocs.internal.api.url     
 
           - name: PROVENDOCS_ENV
             valueFrom:
               configMapKeyRef:
-                name: provendocsconfigmap
+                name: provendocs-configmap
                 key: provendocs.env    
