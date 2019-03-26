@@ -12,11 +12,11 @@ spec:
       targetPort: {{ .Values.proxy.port }} 
       protocol: TCP
   {{ if eq .Values.parent true}}
-    {{ if eq  .Release.Namespace "staging"}}
-      loadBalancerIP: {{ .Values.externalIpStaging }}
-    {{ else if eq  .Release.Namespace  "production"}}  
-      loadBalancerIP: {{ .Values.externalIpProduction }}
-    {{ end }}
+  {{ if eq  .Release.Namespace "staging"}}
+  loadBalancerIP: {{ .Values.externalIpStaging }}
+  {{ else if eq  .Release.Namespace  "production"}}  
+  loadBalancerIP: {{ .Values.externalIpProduction }}
+  {{ end }}
   {{ else }}  
-    type: {{ .Values.service.type }} 
+  type: {{  .Values.service.type }} 
   {{ end }}

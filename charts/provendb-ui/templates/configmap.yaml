@@ -7,4 +7,4 @@ data:
   user.module.url: {{ .Values.user.domain.name }}
   provendb.url: {{ .Values.url }}
   api.url: {{ .Values.apigateway.domain.name }}
-  internal.api.url: api-gateway-service.{{ .Release.Namespace }}.svc.cluster.local:{{ template "provendb-ui.apigatewayport" . }}
+  internal.api.url: provendb-api-gateway-service.{{ .Release.Namespace }}.svc.cluster.local:{{ template "provendb-ui.apigatewayport" . }}

@@ -1,0 +1,9 @@
+helm gcs rm provendb-api-gateway provendb-helm -v 1.0.0
+helm gcs rm provendb-helm provendb-helm -v 1.0.0
+helm gcs rm provendb-proxy provendb-helm -v 1.0.0
+helm gcs rm provendb-tree provendb-helm -v 1.0.0
+helm gcs rm provendb-user provendb-helm -v 1.0.0
+helm gcs rm provendocs provendb-helm -v 1.0.0
+helm gcs rm provendb-concierge provendb-helm -v 1.0.0
+helm gcs rm provendb-io provendb-helm -v 1.0.0
+helm gcs rm provendb-ui provendb-helm -v 1.0.0

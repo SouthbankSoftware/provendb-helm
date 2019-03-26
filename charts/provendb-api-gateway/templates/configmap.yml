@@ -13,3 +13,4 @@ data:
     apigateway.allowed.urls: {{ .Values.allowed.urls }}
     apigateway.concierge.host.port: provendb-concierge-service.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.concierge.grpc.port }}
     apigateway.user.module.mongo.uri: {{ .Values.user.mongo.uri | quote }}
+    apigateway.io.host.port: {{ .Values.io.host.port | quote }}

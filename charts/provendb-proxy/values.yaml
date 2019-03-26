@@ -1,5 +1,5 @@
 replicaCount: 1
-istioSidecarInject: true
+istioSidecarInject: false
 
 service:
   type: LoadBalancer
@@ -17,7 +17,7 @@ proxy:
     bindip: "127.0.0.1"
 
   port: 27018
-  userDatabases: provendocs
+  userDatabases: provendocs-helm
 
   sslEnabled: "true"
   maxConnections: 10

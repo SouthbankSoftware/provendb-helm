@@ -90,3 +90,8 @@ spec:
               configMapKeyRef:
                 name: provendb-api-gateway-configmap
                 key: apigateway.concierge.host.port
+          - name: API_GATEWAY_IO_HOST_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: provendb-api-gateway-configmap
+                key: apigateway.io.host.port      

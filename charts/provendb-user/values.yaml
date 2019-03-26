@@ -1,5 +1,5 @@
 replicaCount: 1
-istioSidecarInject: true
+istioSidecarInject: false
 
 grpc:
   port: 1377

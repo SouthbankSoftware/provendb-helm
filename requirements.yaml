@@ -53,7 +53,7 @@ dependencies:
     repository: "gs://provendb-helm-charts"
     import-values:
       - child: grpc
-        parent: provendb-api-gateway.concierge.grpc.port
+        parent: provendb-api-gateway.concierge.grpc
   - name: provendocs
     version: 1.0.0
     condition: provendocs.enabled, provendb-proxy.enabled, provendb-api-gateway.enabled  

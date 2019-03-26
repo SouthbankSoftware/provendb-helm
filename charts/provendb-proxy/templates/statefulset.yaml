@@ -75,6 +75,11 @@ spec:
                 secretKeyRef:
                   name: provendb-proxy-{{ .Release.Name }}-secret
                   key: proxy.auth.password
+            - name: USER_DATABASES
+              valueFrom:
+                configMapKeyRef:
+                  name: provendb-proxy-{{ .Release.Name }}-configmap
+                  key: proxy.userDatabases        
         - name: proxy
           image: {{ .Values.proxy.image.repository }}:{{ .Values.proxy.image.tag }}
           imagePullPolicy: Always

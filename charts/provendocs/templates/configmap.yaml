@@ -13,7 +13,7 @@ data:
   provendocs.user.module.url: {{ .Values.user.domain.name }}
   provendocs.docs.url: {{ .Values.docs.url }}
   # provendocs.uri: "mongodb://{{ .Values.proxy.auth.username}}:{{ .Values.proxy.auth.password }}@provendb-proxy-service.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.proxy.port }}/{{ template "dbfromuri" . }}"
-  provendocs.uri: "mongodb://admin:password@proxy.provendb.com:27018/provendocs"
+  provendocs.uri: "mongodb://admin:password@proxy.provendb.com:27018/provendocs-helm"
   provendocs.api.url: {{ .Values.apigateway.domain.name }}
-  provendocs.internal.api.url: provendb-api-gatewayservice.{{ .Release.Namespace }}.svc.cluster.local:{{ template "apigatewayport" . }}
+  provendocs.internal.api.url: provendb-api-gateway-service.{{ .Release.Namespace }}.svc.cluster.local:{{ template "apigatewayport" . }}
   provendocs.env: {{ .Values.env }}

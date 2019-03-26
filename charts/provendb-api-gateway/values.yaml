@@ -1,5 +1,5 @@
 replicaCount: 1
-istioSidecarInject: true
+istioSidecarInject: false
 
 image:
   repository: asia.gcr.io/provendb/provendb-api-gateway
@@ -12,4 +12,8 @@ domain:
   name: apigateway.provendb.com
 
 allowed:
-  urls: http://provendocs.com/login       
+  urls: http://provendocs.com/login      
+
+io:
+  host:
+    port: provendb-io-service:10004

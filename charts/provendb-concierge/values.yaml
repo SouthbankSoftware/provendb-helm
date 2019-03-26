@@ -1,5 +1,5 @@
 replicaCount: 1
-istioSidecarInject: true
+istioSidecarInject: false
 
 image:
   repository: asia.gcr.io/provendb/provendb-concierge
