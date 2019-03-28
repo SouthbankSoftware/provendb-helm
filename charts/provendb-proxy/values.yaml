@@ -3,7 +3,7 @@ istioSidecarInject: false
 
 service:
   type: LoadBalancer
-  port: 27018
+  port: 27017
 
 proxy:
   image:
