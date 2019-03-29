@@ -9,3 +9,7 @@ image:
   tag: latest
 
 url: provendb.com
+
+sg:
+  api:
+    key: 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

@@ -12,9 +12,9 @@ spec:
     istio: ingressgateway # use Istio default gateway implementation
   servers:
   - hosts:
-    - "proxy.provendb.com"
+    - "proxy.provendb.io"
     port:
-      number: 27018
+      number: 27017
       protocol: MONGO
       name: mongo
   - hosts:
@@ -51,17 +51,17 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   hosts:
-    - "proxy.provendb.com"
+    - "proxy.provendb.io"
   gateways:
   - provendb-gateway
   tcp:
   - match:
-    - port: 27018
+    - port: 27017
     route:
     - destination:
         host: provendb-proxy-{{ .Release.Name }}-service
         port:
-          number: 27018
+          number: 27017
           # name: proxy-port            
 
 
@@ -205,7 +205,7 @@ metadata:
   name: provendb-proxy
 spec:
   hosts:
-  - '*.proxy.provendb.com'
+  - '*.proxy.provendb.io'
   ports:
   - number: 27018
     name: mongo

@@ -46,6 +46,10 @@ provendb-ui:
   http:
     port: 8088
 
+provendocs-thumbnail:
+  enabled: true
+  
+
 
 global:
   jaegeragent:

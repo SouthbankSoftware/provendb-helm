@@ -99,3 +99,15 @@ spec:
               configMapKeyRef:
                 name: provendocs-configmap
                 key: provendocs.env    
+
+          - name: THUMBS_MODULE_URL
+            valueFrom:
+              configMapKeyRef:
+                name: provendocs-configmap
+                key: provendocs.thumb.url
+
+          - name: PROVENDOCS_SG_API_KEY
+            valueFrom:
+              configMapKeyRef:
+                name: provendocs-configmap
+                key: provendocs.sg.api.key

@@ -1,0 +1,47 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: provendocs-thumbnail
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: provendocs-thumbnail
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: {{ .Values.istioSidecarInject | quote }} 
+      labels:
+        app: provendocs-thumbnail
+    spec:
+      containers:
+      - name: provendocs-thumbnail
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: Always  
+        livenessProbe:
+          httpGet:
+              path: /status
+              port: {{ .Values.http.port }}
+          initialDelaySeconds: 5 #wait this period after starting fist time
+          periodSeconds: 30  # polling interval
+          timeoutSeconds: 60    # wish to receive response within this time period
+        readinessProbe: 
+          httpGet:
+              path: /status
+              port: {{ .Values.http.port }}
+          initialDelaySeconds: 5 #wait this period after staring fist time
+          periodSeconds: 30    # polling interval
+          timeoutSeconds: 60 
+        ports:
+        - containerPort: {{ .Values.http.port }}
+        command: ["/bin/ash"]
+        args: ["-c","node -- bin/www"] 
+        # args: ["-c", "tail -f /etc/resolv.conf"]
+        env:
+          - name: PROVENDOCS_URI
+            valueFrom:
+              configMapKeyRef:
+                name: provendocs-thumbnail-configmap
+                key: provendocs-thumbnail.provendocs.uri

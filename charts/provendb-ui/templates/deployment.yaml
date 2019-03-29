@@ -69,3 +69,9 @@ spec:
               configMapKeyRef:
                 name: provendb-ui-configmap
                 key: internal.api.url
+
+          - name: PROVENDB_SG_API_KEY
+            valueFrom:
+              configMapKeyRef:
+                name: provendb-ui-configmap
+                key: sg.api.key

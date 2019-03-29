@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: provendocs-thumbnail-configmap
+  namespace: {{ .Release.Namespace }}
+data:
+    provendocs-thumbnail.provendocs.uri: {{ .Values.provendocs.mongo.uri }}
+    # "mongodb://admin:password@proxy.provendb.io/provendocs-helm"

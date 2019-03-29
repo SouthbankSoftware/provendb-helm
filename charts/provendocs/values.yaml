@@ -13,4 +13,14 @@ docs:
 
 env: prod
 
+mongo:  
+  uri: "mongodb://admin:password@proxy.provendb.io/provendocs-helm"
+
+thumb:
+  uri: "provendocs-thumbnail-service:8889"
+
+sg:
+  api:
+    key: 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  
+
 #optional when installing the parent chart

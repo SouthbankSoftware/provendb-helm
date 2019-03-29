@@ -10,10 +10,12 @@ data:
   provendocs.google.auth.callback: "http://{{ .Values.docs.url }}/auth/google/callback"
   provendocs.google.signup.callback: "http://{{ .Values.docs.url }}/signup/google/callback"
 
-  provendocs.user.module.url: {{ .Values.user.domain.name }}
-  provendocs.docs.url: {{ .Values.docs.url }}
+  provendocs.user.module.url: "http://{{ .Values.user.domain.name }}"
+  provendocs.docs.url: "http://{{ .Values.docs.url }}"
   # provendocs.uri: "mongodb://{{ .Values.proxy.auth.username}}:{{ .Values.proxy.auth.password }}@provendb-proxy-service.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.proxy.port }}/{{ template "dbfromuri" . }}"
-  provendocs.uri: "mongodb://admin:password@proxy.provendb.com:27018/provendocs-helm"
-  provendocs.api.url: {{ .Values.apigateway.domain.name }}
-  provendocs.internal.api.url: provendb-api-gateway-service.{{ .Release.Namespace }}.svc.cluster.local:{{ template "apigatewayport" . }}
+  provendocs.uri: {{ .Values.mongo.uri }}
+  provendocs.api.url: "http://{{ .Values.apigateway.domain.name }}"
+  provendocs.internal.api.url: http://provendb-api-gateway-service.{{ .Release.Namespace }}.svc.cluster.local:{{ template "apigatewayport" . }}
   provendocs.env: {{ .Values.env }}
+  provendocs.thumb.url: http://{{ .Values.thumb.uri }}
+  provendocs.sg.api.key: {{ .Values.sg.api.key | quote }}
