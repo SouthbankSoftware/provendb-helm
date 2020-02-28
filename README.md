@@ -10,7 +10,10 @@ minikube start --kubernetes-version=1.14.4 --cpus=6 --memory=8000mb
 
 # Tested on: ###
 kubernetes version: 1.14.4
+
 Helm version: 2.14.3
+
+Cloud: GCP, Azure and Minikube
 
 # Running ProvenDB from the packaged helm chart
 
