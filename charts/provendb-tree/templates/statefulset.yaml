@@ -4,30 +4,40 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: provendb-tree-statefulset
+  name: {{ template "baseName" . }}-provendb-tree-statefulset
   namespace: {{ .Release.Namespace }}
 spec:
-  serviceName: provendb-tree-service
+  serviceName: {{ template "baseName" . }}-provendb-tree-service
   replicas: 1
   selector:
     matchLabels:
-      app: provendb-tree-{{ .Release.Name }}
+      app: {{ template "baseName" . }}-provendb-tree
+      team: {{ .Values.kubecost.teamName }}
+      product: {{ .Values.kubecost.productName }}
+      env: {{ .Release.Namespace }}
   template:
     metadata:
       annotations:
-        prometheus.io/scrape: {{ .Values.tree.prometheus.enable | quote }}
-        prometheus.io/port: {{ .Values.tree.prometheus.port | quote }}
+        prometheus.io/scrape: {{ .Values.prometheus.enable | quote }}
+        prometheus.io/port: {{ .Values.prometheus.port | quote }}
+        prometheus.io/scheme: http
         sidecar.istio.io/inject: {{ .Values.istioSidecarInject | quote }} 
+        cluster-autoscaler.kubernetes.io/safe-to-evict: {{ .Values.safeToEvict | quote }} 
       labels:
-        app: provendb-tree-{{ .Release.Name }}
+        app: {{ template "baseName" . }}-provendb-tree
+        team: {{ .Values.kubecost.teamName }}
+        product: {{ .Values.kubecost.productName }}
+        env: {{ .Release.Namespace }}
     spec:
       containers:
       - name: mongodb-cache
-        image: mongo:latest
+        image: {{ .Values.mongodbcache.image.repository }}:{{ .Values.mongodbcache.image.tag }}
         imagePullPolicy: Always
         volumeMounts:
         - name: mongodb-cache-data
           mountPath: /data/db
+        - name: tz-config
+          mountPath: /etc/localtime
         readinessProbe: 
           exec:
             command:
@@ -64,65 +74,79 @@ spec:
           - name: MONGODBCACHE_BIND_IP
             valueFrom:
               configMapKeyRef:
-                name: provendb-tree-configmap
+                name: {{ template "baseName" . }}-provendb-tree-configmap
                 key: mongodbcache.bind.ip
           - name: MONGODBCACHE_PORT
             valueFrom:
               configMapKeyRef:
-                name: provendb-tree-configmap
+                name: {{ template "baseName" . }}-provendb-tree-configmap
                 key: mongodbcache.port
       - name: tree-service
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        image: {{ .Values.tree.image.repository }}:{{ .Values.tree.image.tag }}
         imagePullPolicy: Always
         ports:
         - containerPort: {{ .Values.tree.host.port }}
-        - containerPort: {{ .Values.tree.prometheus.port }}
+        - containerPort: {{ .Values.prometheus.port }}
         resources: 
 {{ toYaml .Values.tree.resources | indent 10 }}  
         readinessProbe:
           tcpSocket:
             port: {{ .Values.tree.host.port }}
-          initialDelaySeconds: 30
-          periodSeconds: 30
-          timeoutSeconds: 60
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
         livenessProbe:
           tcpSocket:
             port: {{ .Values.tree.host.port }}
-          initialDelaySeconds: 30
-          periodSeconds: 120 
-          timeoutSeconds: 60
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
         command: ["./tree"]
+        volumeMounts:
+          - name: tz-config
+            mountPath: /etc/localtime 
         env:
           - name: TREE_CACHE_DB_URI
             valueFrom:
               configMapKeyRef:
-                name: provendb-tree-configmap
+                name: {{ template "baseName" . }}-provendb-tree-configmap
                 key: tree.cachedb.uri
           - name: TREE_HOST_PORT
             valueFrom:
               configMapKeyRef:
-                name: provendb-tree-configmap
+                name: {{ template "baseName" . }}-provendb-tree-configmap
                 key: tree.host.port
           - name: mongoUri
             valueFrom:
               secretKeyRef:
-                name: provendb-tree-secret
-                key: tree.mongo.targetDB.uri      
+                name: provendb
+                key: targetDBUri      
           - name: TREE_ENV
             valueFrom:
               configMapKeyRef:
-                name: provendb-tree-configmap
-                key: tree.treeenv
+                name: {{ template "baseName" . }}-provendb-tree-configmap
+                key: tree.env
           - name: mongoTargetDB
             valueFrom:
               configMapKeyRef:
-                name: provendb-tree-configmap
+                name: {{ template "baseName" . }}-provendb-tree-configmap
                 key: tree.mongo.targetDB    
-          # - name: TREE_JAEGER_AGENT_HOST_PORT   
-          #   valueFrom:
-          #     configMapKeyRef:
-          #       name: env-parameters
-          #       key: jaeger-agent.host.port      
+          - name: TREE_JAEGER_AGENT_HOST_PORT   
+            valueFrom:
+              configMapKeyRef:
+                name: {{ template "baseName" . }}-provendb-tree-configmap
+                key: jaeger-agent.host.port  
+          - name: PROVENDB_VERIFY_BCTOKEN
+            valueFrom:
+              secretKeyRef:
+                name: provendb
+                key: blockcypher.token 
+          - name: TREE_DISABLE_OPENTRACING
+            value: {{ .Values.jaegeragent.enabled | quote}}
+      volumes:
+        - name: tz-config
+          hostPath:
+            path: /usr/share/zoneinfo/Australia/Melbourne    
   volumeClaimTemplates:
   - metadata:
       name: mongodb-cache-data

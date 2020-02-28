@@ -21,4 +21,7 @@
 {{- end -}}
 # {{- printf "%s" .Values.cachedb.uri | quote -}}
 
+{{- define "baseName" -}}
+{{- trimPrefix (printf "%s-" .Release.Namespace) .Release.Name -}}
+{{- end -}}
 

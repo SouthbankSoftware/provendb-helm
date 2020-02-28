@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "baseName" . }}-provendb-anchor-service
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+    - port: {{ .Values.anchor.port }}
+      targetPort: {{ .Values.anchor.port }}
+      protocol: TCP
+      name: {{ template "baseName" . }}-provendb-anchor-port
+    - port: {{ .Values.anchor.verifier.port }}
+      targetPort: {{ .Values.anchor.verifier.port }}
+      protocol: TCP
+      name: http-{{ template "baseName" . }}-provendb-anchor-verifier-port
+    - port: {{ .Values.prometheus.port }}
+      targetPort: {{ .Values.prometheus.port }}
+      protocol: TCP
+      name: http-{{ template "baseName" . }}-provendb-anchor-prometheus-port  
+  selector:
+    app: {{ template "baseName" . }}-provendb-anchor
+---

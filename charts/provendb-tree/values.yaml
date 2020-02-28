@@ -4,11 +4,12 @@
 
 replicaCount: 1
 istioSidecarInject: false
+safeToEvict: true
 
 tree:
-  prometheus:
-    enable: true
-    port: 10001
+  image:
+    repository: asia.gcr.io/provendb/provendb-tree
+    tag: latest
   resources: 
     requests:
       memory: 2Gi # 4 GB
@@ -18,17 +19,27 @@ tree:
       cpu: 3000 #  1 CPUs  
   host:
     port: 10000
-  targetDBuri: "mongodb+srv://sbs:DBEnvy2016@mongogcp1-oexhg.gcp.mongodb.net"  
   targetDB: "provendocs-helm"  
+  env: "dev"
+
+prometheus:
+    enable: true
+    port: 10001  
 
 mongodbcache:
   bindip: 127.0.0.1
   port: 30010  
   size: 1Gi
+  image:
+    repository: mongo
+    tag: "4.2.0"
 
-      
-image:
-  repository: asia.gcr.io/provendb/provendb-tree
-  tag: latest
+jaegeragent:
+  host:
+    port: jaeger-agent.istio-system.svc.cluster.local:6831
+  enabled: false  
 
 
+kubecost:
+  teamName: core  
+  productName: tree

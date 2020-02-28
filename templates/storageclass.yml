@@ -1,3 +1,5 @@
+# This applies to GCP
+{{if eq  .Values.cloud "GCP"}} 
 kind: StorageClass
 apiVersion: storage.k8s.io/v1beta1
 metadata:
@@ -7,3 +9,29 @@ provisioner: kubernetes.io/gce-pd
 allowVolumeExpansion: true
 parameters:
   type: pd-ssd
+{{else if eq .Values.cloud "AZURE" }}
+# This applies to Azure
+kind: StorageClass
+apiVersion: storage.k8s.io/v1beta1
+metadata:
+  name: fast
+  namespace: {{ .Release.Namespace }}
+provisioner: kubernetes.io/azure-disk
+allowVolumeExpansion: true
+parameters:
+  cachingmode: ReadOnly
+  kind: Managed
+  storageaccounttype: Premium_LRS
+{{ else if eq .Values.cloud "MINIKUBE" }}
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: fast
+  annotations:
+    storageclass.beta.kubernetes.io/is-default-class: "true"
+  labels:
+    addonmanager.kubernetes.io/mode: Reconcile
+provisioner: k8s.io/minikube-hostpath
+{{ else }}
+{{ end }}

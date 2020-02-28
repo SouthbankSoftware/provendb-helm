@@ -1,76 +1,21 @@
 dependencies:
-  - name: provendb-proxy
-    version: 1.0.0
-    condition: provendb-proxy.enabled
-    repository: "gs://provendb-helm-charts"
-    import-values:
-      - child: proxy
-        parent: provendocs.proxy
-  - name: provendb-tree
-    version: 1.0.0
-    condition: provendb-tree.enabled, provendb-proxy.enabled
-    repository: "gs://provendb-helm-charts"
-    import-values:
-      - child: tree.host
-        parent: provendb-api-gateway.tree.host  
-      - child: tree.host
-        parent: provendb-concierge.tree.host    
-      - child: tree.host
-        parent: provendb-proxy.tree.host  
-  - name: provendb-user
-    version: 1.0.0
-    condition: provendb-user.enabled 
-    repository: "gs://provendb-helm-charts" 
-    import-values:
-      - child: grpc
-        parent: provendb-api-gateway.grpc
-      - child: domain
-        parent: provendocs.user.domain  
-      - child: domain
-        parent: provendb-ui.user.domain  
-      - child: mongo
-        parent: provendb-io.user.mongo
-      - child: mongo
-        parent: provendb-api-gateway.user.mongo
-      - child: mongo
-        parent: provendb-concierge.user.mongo  
-  - name: provendb-api-gateway
-    version: 1.0.0
-    condition: provendb-api-gateway.enabled, provendb-user.enabled, provendb-tree.enabled  
-    repository: "gs://provendb-helm-charts"
-    import-values:
-      - child: domain
-        parent: provendocs.apigateway.domain 
-      - child: domain
-        parent: provendb-ui.apigateway.domain  
-      - child: host
-        parent: provendocs.apigateway.host
-      - child: host
-        parent: provendb-ui.apigateway.host    
-  - name: provendb-concierge
-    version: 1.0.0
-    condition: provendb-concierge.enabled, provendb-proxy.enabled, provendb-user.enabled
-    repository: "gs://provendb-helm-charts"
-    import-values:
-      - child: grpc
-        parent: provendb-api-gateway.concierge.grpc
-  - name: provendocs
-    version: 1.0.0
-    condition: provendocs.enabled, provendb-proxy.enabled, provendb-api-gateway.enabled  
-    repository: "gs://provendb-helm-charts"
-    import-values:
-      - child: mongo
-        parent: provendocs-thumbnail.provendocs.mongo
-  - name: provendb-io
-    version: 1.0.0
-    condition: provendb-io.enabled, provendb-user.enabled
-    repository: "gs://provendb-helm-charts"
-  - name: provendb-ui
-    version: 1.0.0
-    condition: provendb-ui.enabled, provendb-api-gateway.enabled, provendb-user.enabled
-    repository: "gs://provendb-helm-charts"
-  - name: provendocs-thumbnail
-    version: 1.0.0
-    condition: provendb-thumbnail.enabled, provendocs.enabled
-    repository: "gs://provendb-helm-charts"  
+  # - name: provendb-proxy
+  #   version: 1.2.16
+  #   condition: provendb-proxy.enabled
+  #   repository: "gs://provendb-helm-charts/provendb-proxy"
+  # - name: provendb-tree
+  #   version: 1.0.1
+  #   condition: provendb-tree.enabled, provendb-proxy.enabled
+  #   repository: "gs://provendb-helm-charts/provendb-tree"
+  # - name: provendb-concierge
+  #   version: 1.0.0
+  #   condition: provendb-concierge.enabled, provendb-proxy.enabled
+  #   repository: "gs://provendb-helm-charts/provendb-concierge"
+  # - name: provendb-anchor
+  #   version: 1.0.0
+  #   condition: provendb-anchor.enabled, provendb-proxy.enabled, provendb-tree.enabled
+  #   repository: "gs://provendb-helm-charts/provendb-anchor"
+  - name: mongodb
+    version: 7.8.6
+    repository: https://kubernetes-charts.storage.googleapis.com
 

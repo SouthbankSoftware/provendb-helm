@@ -1,17 +1,12 @@
 replicaCount: 1
 istioSidecarInject: false
+safeToEvict: true
 
 image:
   repository: asia.gcr.io/provendb/provendb-concierge
   tag: latest
 
-grpc:
-  port: 10002
+env: "prd"
 
-prometheus:
-  port: 10003  
-  enable: true
-
-helmChartVersion: 1.0.0
 
   

@@ -1,0 +1,35 @@
+replicaCount: 1
+istioSidecarInject: false
+safeToEvict: true
+
+anchor:
+  image:
+    repository: asia.gcr.io/provendb/provendb-anchor
+    tag: latest
+  resources: 
+    requests:
+      memory: 1Gi
+      cpu: "1000m"
+    limits:
+      memory: 6Gi
+      cpu: "3000m"
+  port: 10008
+  verifier:
+    port: 11000
+    uriPrefix: https://anchor.provendb.com
+  badger:
+    size: 30Gi
+
+env: dev
+
+prometheus:
+  enable: true
+  port: 10009
+
+jaegeragent:
+  hostPort: jaeger-agent.istio-system.svc.cluster.local:6831
+
+kubecost:
+  teamName: blockchain  
+  productName: anchor  
+

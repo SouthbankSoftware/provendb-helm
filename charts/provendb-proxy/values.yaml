@@ -1,24 +1,29 @@
 replicaCount: 1
-istioSidecarInject: false
+istioSidecarInject: true
+safeToEvict: true
 
 service:
   type: LoadBalancer
   port: 27017
+  # if type is LoadBalancer, you can specify loadBalancerSourceRanges
+  loadBalancerSourceRanges: []
 
 proxy:
   image:
     repository: asia.gcr.io/provendb/provendb-proxy
     tag: latest
-  mongodb:
-    uri: "mongodb+srv://sbs:DBEnvy2016@mongogcp1-oexhg.gcp.mongodb.net/provendocs-helm"
-
+  chainpoint:
+    nodes: http://35.235.91.33
   sidecarmongodb:
     port: 27017
     bindip: "127.0.0.1"
-
+    image:
+      repository: mongo
+      tag: "4.2.0"
   port: 27018
-  userDatabases: provendocs-helm
-
+  userDatabases: provendb_stg
+  healthcheck:
+    host: localhost
   sslEnabled: "true"
   maxConnections: 10
   maxThreads: 50
@@ -27,13 +32,33 @@ proxy:
     uri: "mongodb://localhost:27017"
     username: "admin"
     password: "password"
-  p12:
-    filePassword: "provendb"
+  dataSizeGBLimit: 1GB  
+  env: "dev"
+  jvm: "-Xms256M -Xmx768M"
+  grpc:
+    port: 10018
+  mongodb:
+    uri: "sdf"
+  domainName:
+
+replicaCount: 1 
 
 tree:
+  dbinstance: "local-dev"  
+  port: 10000  
+
+jaegeragent:
   host:
-    port: 10000
-  dbinstance: "local-dev"    
+    port: jaeger-agent.istio-system.svc.cluster.local:6831
 
-parent: false  
+prometheus:
+  port: 9091  
+  enable: true    
 
+kubecost:
+  teamName: core  
+  productName: proxy
+
+anchor:
+  host: provendb-anchor-service
+  port:  10008

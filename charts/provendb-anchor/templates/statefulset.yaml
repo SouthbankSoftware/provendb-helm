@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ template "baseName" . }}-provendb-anchor-statefulset
+  namespace: {{ .Release.Namespace }}
+spec:
+  serviceName: {{ template "baseName" . }}-provendb-anchor-service
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "baseName" . }}-provendb-anchor
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: {{ .Values.prometheus.enable | quote }}
+        prometheus.io/port: {{ .Values.prometheus.port | quote }}
+        prometheus.io/scheme: http
+        sidecar.istio.io/inject: {{ .Values.istioSidecarInject | quote }}
+        cluster-autoscaler.kubernetes.io/safe-to-evict: {{ .Values.safeToEvict | quote }}
+      labels:
+        app: {{ template "baseName" . }}-provendb-anchor
+        team: {{ .Values.kubecost.teamName }}
+        product: {{ .Values.kubecost.productName }}
+        env: {{ .Release.Namespace }}
+    spec:
+      containers:
+        - name: anchor-service
+          image: {{ .Values.anchor.image.repository }}:{{ .Values.anchor.image.tag }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: {{ .Values.anchor.port }}
+            - containerPort: {{ .Values.anchor.verifier.port }}
+            - containerPort: {{ .Values.prometheus.port }}
+          resources:
+{{ toYaml .Values.anchor.resources | trim | indent 12 }}
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.anchor.port }}
+            initialDelaySeconds: 2
+            periodSeconds: 10
+            timeoutSeconds: 20
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.anchor.port }}
+            initialDelaySeconds: 2
+            periodSeconds: 10
+            timeoutSeconds: 20
+          volumeMounts:
+            - name: data-badger
+              mountPath: /root/data/badger
+            - name: tz-config
+              mountPath: /etc/localtime
+          env:
+            - name: ANCHOR_ENV
+              value: {{ .Values.env }}
+            - name: ANCHOR_VERIFIER_HOST_PORT
+              value: "0.0.0.0:{{ .Values.anchor.verifier.port }}"
+            - name: ANCHOR_VERIFIER_URI_PREFIX
+              value: {{ .Values.anchor.verifier.uriPrefix }}
+            - name: ANCHOR_ETH_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: provendb
+                  key: anchor.eth.endpoint
+            - name: ANCHOR_ETH_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: provendb
+                  key: anchor.eth.private-key
+          command: ["/bin/ash", "-c", "anchor | grep -v tracing"]        
+      volumes:
+        - name: tz-config
+          hostPath:
+            path: /usr/share/zoneinfo/Australia/Melbourne
+  volumeClaimTemplates:
+    - metadata:
+        name: data-badger
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: fast
+        resources:
+          requests:
+            storage: {{ .Values.anchor.badger.size }}

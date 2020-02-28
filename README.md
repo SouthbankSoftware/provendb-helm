@@ -1,6 +1,16 @@
-Note: Currently, only helm charts for `provendb-proxy` are working.
+### Prerequisite: ###
 
-To use the helm charts for `provendb-proxy` you need to do the following:
+1. You should have a kubernetes cluster running and `kubectl` should point to it. 
+2. There should `helm2.x` installed on the client machine. For instructions, you can refere here https://helm.sh/docs/intro/install/
+3. The kubernetes cluster should have `tiller` installed. For installation of tiller, please refer https://codereviewvideos.com/course/installing-kubernetes-rancher-2-terraform/video/install-tiller-kubernetes-cluster
+
+### Tested on: ###
+kubernetes version: 1.14.4
+Helm version: 2.14.3
+
+```
+minikube start --kubernetes-version=1.14.4 --cpus=4 --memory=6000mb
+```
 
 ### Fetch helm charts from repository
 
@@ -80,3 +90,21 @@ mongo $SERVICE_IP:27018
 
 
 
+Download helm client on mac
+
+```
+brew install kubernetes-helm
+```
+
+Install tiller (server on k8s cluster)
+
+```
+helm init
+```
+
+doubts
+=======
+There has to https route to anchor service configured
+storage class is different for each cloud
+concierge run the job to completion
+no SSL
