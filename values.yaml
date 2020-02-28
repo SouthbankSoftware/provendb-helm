@@ -34,7 +34,7 @@ provendb-tree:
   jaegeragent: 
     host:
       port: "" 
-    enabled: false  
+    disabled: true
       
 
 provendb-concierge:

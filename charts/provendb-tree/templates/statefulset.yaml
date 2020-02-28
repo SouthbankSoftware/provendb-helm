@@ -142,7 +142,7 @@ spec:
                 name: provendb
                 key: blockcypher.token 
           - name: TREE_DISABLE_OPENTRACING
-            value: {{ .Values.jaegeragent.enabled | quote}}
+            value: {{ .Values.jaegeragent.disabled | quote}}
       volumes:
         - name: tz-config
           hostPath:

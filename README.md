@@ -1,110 +1,57 @@
 ### Prerequisite: ###
 
 1. You should have a kubernetes cluster running and `kubectl` should point to it. 
-2. There should `helm2.x` installed on the client machine. For instructions, you can refere here https://helm.sh/docs/intro/install/
+2. There should be `helm2.x` installed on the client machine. For instructions, you can refer here https://helm.sh/docs/intro/install/
 3. The kubernetes cluster should have `tiller` installed. For installation of tiller, please refer https://codereviewvideos.com/course/installing-kubernetes-rancher-2-terraform/video/install-tiller-kubernetes-cluster
+4. Make sure you have enough resources in the k8s cluster. The following works on minikube
+```
+minikube start --kubernetes-version=1.14.4 --cpus=6 --memory=8000mb
+```
 
 ### Tested on: ###
 kubernetes version: 1.14.4
 Helm version: 2.14.3
 
+# Running ProvenDB
+
+
+1. Download dependencies
+
+Inside the `provendb-helm` repository
 ```
-minikube start --kubernetes-version=1.14.4 --cpus=4 --memory=6000mb
+helm dependency update
 ```
+This will download the mongodb helm chart which is the only dependency.
 
-### Fetch helm charts from repository
-
-1. The helm charts have been packaged into a tar ball and upload on a helm chart repository. We will be using GCS as our helm chart repo.
-2. In order to be able to push and pull, you need to authenticate to GCS repo. I have created a `serviceaccount` for the same. Please ask for the credentials file if you need to use this chart.
-3. We use this plugin to push and pull charts. https://github.com/nouney/helm-gcs. Please check the README there to fetch the tar ball.
-In our case, 
+2. Install the helm charts
 ```
-repo-name = provendb-helm
-chart = proxy-helm
+helm install --name=suku --namespace=prd  .
 ```
-So, to fetch `proxy-helm`, you may run the following command:
+The release name can be anything. In this case suku.
+
+3. If you run `kubectl get pods -n prd`, you should see the list of pods. They might error initially, but eventually they should all be healthy.
+
+4a. On cloud providers that support load balancers, an external IP address would be provisioned to access the proxy service. You can get the external IP for the proxy service by running the folowing:
 ```
-helm fetch provendb-helm/proxy-helm
+kubectl get svc suku-provendb-proxy-service -n prd
 ```
-After this, `proxy-helm-0.1.0.tgz` should be downloaded which is the tar ball for `proxy` chart.
+and checking the EXTERNAL-IP field. The default port to connect to is 27017
 
-PS: If you face any issue accessing to GCS, you can download the tar ball `proxy-helm-0.1.0.tgz` from github itself.
-https://github.com/SouthbankSoftware/provendb-helm/blob/master/charts/proxy-helm/proxy-helm-0.1.0.tgz
-
-### Using the tar ball
-
-__PREREQUISITE__: You should have `gcloud` and `kubectl` installed. Use `developer` account for `gcloud`.
-
-Once you have downloaded the tar ball, you can use to setup `k8s` environment like the following:
-1. Connect to a `k8s` cluster. In order to connect to the `staging` cluster, use this command 
+4b. Otherwise, e.g. on minikube, you can do port forwarding like the following:
 ```
-gcloud container clusters get-credentials provendb --zone australia-southeast1-a --project provendb
+minikube service suku-provendb-proxy-service -n prd
 ```
-2. You can now install the helm chart like the following
+Looks for the IP address and the port corresponding to `mongo-suku-provendb-proxy-port`
+
+5. Then you can connect to the proxy using this command:
 ```
-helm install --name provendb --namespace dev proxy-helm-0.1.0.tgz
-```
-You can override these values https://github.com/SouthbankSoftware/provendb-helm/blob/master/charts/proxy-helm/values.yaml when using the above command
-
-The above will generate the following output
-```
-NAME:   provendb
-LAST DEPLOYED: Fri Dec 21 00:13:15 2018
-NAMESPACE: dev
-STATUS: DEPLOYED
-
-RESOURCES:
-==> v1/Secret
-NAME                    AGE
-provendb-proxy-secrets  0s
-
-==> v1/ConfigMap
-provendb-proxy-configmap  0s
-
-==> v1/Service
-provendb-proxy-service  0s
-
-==> v1/Deployment
-provendb-proxy  0s
-
-==> v1/Pod(related)
-
-NAME                             READY  STATUS             RESTARTS  AGE
-provendb-proxy-66455f984d-62lxz  0/1    ContainerCreating  0         0s
-
-
-NOTES:
-1. Get the application URL by running these commands:
-     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
-           You can watch the status of by running 'kubectl get svc -w provendb-proxy-helm'
-  export SERVICE_IP=$(kubectl get svc --namespace dev provendb-proxy-helm -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-  echo http://$SERVICE_IP:27018
+mongo mongodb://admin:password@<ipaddress>:<port>/provendb
 ```
 
-After a while, you should be able to access proxy using the following command:
-```
-mongo $SERVICE_IP:27018
-```
+6. You should now be connect to proxy and create and submit proofs.
 
+Limitations:
+============
+1. The connection to provendb proxy is non-ssl.
+2. Some of the configuration is different for each cloud provider. This helm chart has been tested on GCP, Azure and minikube.
 
-
-
-
-Download helm client on mac
-
-```
-brew install kubernetes-helm
-```
-
-Install tiller (server on k8s cluster)
-
-```
-helm init
-```
-
-doubts
-=======
-There has to https route to anchor service configured
-storage class is different for each cloud
-concierge run the job to completion
-no SSL

@@ -29,7 +29,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   name: fast
   annotations:
-    storageclass.beta.kubernetes.io/is-default-class: "true"
+    storageclass.beta.kubernetes.io/is-default-class: "false"
   labels:
     addonmanager.kubernetes.io/mode: Reconcile
 provisioner: k8s.io/minikube-hostpath

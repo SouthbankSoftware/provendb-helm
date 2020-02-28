@@ -1,20 +1,4 @@
 dependencies:
-  # - name: provendb-proxy
-  #   version: 1.2.16
-  #   condition: provendb-proxy.enabled
-  #   repository: "gs://provendb-helm-charts/provendb-proxy"
-  # - name: provendb-tree
-  #   version: 1.0.1
-  #   condition: provendb-tree.enabled, provendb-proxy.enabled
-  #   repository: "gs://provendb-helm-charts/provendb-tree"
-  # - name: provendb-concierge
-  #   version: 1.0.0
-  #   condition: provendb-concierge.enabled, provendb-proxy.enabled
-  #   repository: "gs://provendb-helm-charts/provendb-concierge"
-  # - name: provendb-anchor
-  #   version: 1.0.0
-  #   condition: provendb-anchor.enabled, provendb-proxy.enabled, provendb-tree.enabled
-  #   repository: "gs://provendb-helm-charts/provendb-anchor"
   - name: mongodb
     version: 7.8.6
     repository: https://kubernetes-charts.storage.googleapis.com
