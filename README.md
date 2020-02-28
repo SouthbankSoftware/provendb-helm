@@ -1,4 +1,4 @@
-### Prerequisite: ###
+# Prerequisite:
 
 1. You should have a kubernetes cluster running and `kubectl` should point to it. 
 2. There should be `helm2.x` installed on the client machine. For instructions, you can refer here https://helm.sh/docs/intro/install/
@@ -8,7 +8,7 @@
 minikube start --kubernetes-version=1.14.4 --cpus=6 --memory=8000mb
 ```
 
-### Tested on: ###
+# Tested on: ###
 kubernetes version: 1.14.4
 Helm version: 2.14.3
 
@@ -68,6 +68,8 @@ mongo mongodb://admin:password@<ipaddress>:<port>/provendb
 ```
 
 6. You should now be connect to proxy and create and submit proofs.
+
+Note: Most of the important configuration can be overriden by modifiying values in the root `values.yaml` file.
 
 Limitations:
 ============
