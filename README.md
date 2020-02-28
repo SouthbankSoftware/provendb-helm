@@ -12,8 +12,27 @@ minikube start --kubernetes-version=1.14.4 --cpus=6 --memory=8000mb
 kubernetes version: 1.14.4
 Helm version: 2.14.3
 
-# Running ProvenDB
+# Running ProvenDB from the packaged helm chart
 
+The public helm repository for provendb is location on GCP. 
+
+1. Install the helm gcs plugin from here
+2. Add your repository to Helm
+```
+helm repo add provendb  gs://provendb-helm-charts
+```
+3. Update Helm cache
+```
+helm repo update
+```
+4. Fetch the chart
+```
+helm fetch provendb/provendb-helm
+```
+5. Continue from Step 2 in the next section.
+
+
+# Running ProvenDB from the git repo
 
 1. Download dependencies
 
