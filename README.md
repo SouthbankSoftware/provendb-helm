@@ -15,11 +15,16 @@ Helm version: 2.14.3
 
 Cloud: GCP, Azure and Minikube
 
-# Running ProvenDB from the packaged helm chart
+You can install the helm chart in any one of the following two ways:
+
+# I. Running ProvenDB from the packaged helm chart
 
 The public helm repository for provendb is location on GCP. 
 
-1. Install the helm gcs plugin from here
+1. Install the helm gcs plugin from here https://github.com/hayorov/helm-gcs 
+```
+helm plugin install https://github.com/hayorov/helm-gcs --version 0.2.2
+```
 2. Add your repository to Helm
 ```
 helm repo add provendb  gs://provendb-helm-charts
@@ -35,7 +40,7 @@ helm fetch provendb/provendb-helm
 5. Continue from Step 2 in the next section.
 
 
-# Running ProvenDB from the git repo
+# II. Running ProvenDB from the git repo
 
 1. Download dependencies
 
