@@ -37,8 +37,11 @@ helm repo update
 ```
 helm fetch provendb/provendb-helm
 ```
-5. Continue from Step 2 in the next section.
-
+5. 
+```
+helm install --name=suku --namespace=prd  provendb-helm-1.0.0.tgz
+```
+6. Continue from Step 3 in the next section.
 
 # II. Running ProvenDB from the git repo
 
