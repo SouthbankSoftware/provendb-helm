@@ -107,7 +107,7 @@ spec:
           timeoutSeconds: 5      
         command: ["/bin/ash"]
         args: ["-c",
-              "./tree  &> tree.log & tail -f tree.log"]
+              "./tree   2>&1 | tee tree.log"]
         volumeMounts:
         {{ if ne .Values.global.cloud "DOCKER_DESKTOP_KUBERNETES"}}  
           - name: tz-config
