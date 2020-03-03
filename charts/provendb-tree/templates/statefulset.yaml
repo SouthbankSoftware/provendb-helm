@@ -94,13 +94,17 @@ spec:
         readinessProbe:
           tcpSocket:
             port: {{ .Values.tree.host.port }}
-          initialDelaySeconds: 30
+          initialDelaySeconds: 5
           periodSeconds: 10
           timeoutSeconds: 5
         livenessProbe:
           exec: 
-            command:
-              - "! grep -q ERROR tree.log  && netstat -an | grep ${TREE_PORT} > /dev/null || exit 1"
+            command: ["/bin/ash"]
+            args: ["-c",
+                  "! grep -q ERROR /tree.log  && netstat -an | grep ${TREE_PORT} > /dev/null || exit 1"]
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5      
         command: ["/bin/ash"]
         args: ["-c",
               "./tree  &> tree.log & tail -f tree.log"]
