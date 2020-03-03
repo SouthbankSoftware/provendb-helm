@@ -2,4 +2,4 @@ apiVersion: v1
 appVersion: "1.0"
 description: A ProvenDB Helm chart for Kubernetes
 name: provendb-helm
-version: 1.0.0
+version: 1.0.1
