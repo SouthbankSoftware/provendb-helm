@@ -3,7 +3,7 @@ entries:
   mongodb:
   - apiVersion: v1
     appVersion: 4.2.3
-    created: "2020-03-03T13:01:28.771006+11:00"
+    created: "2020-03-03T13:24:10.275743+11:00"
     description: NoSQL document-oriented database that stores JSON-like documents
       with dynamic schemas, simplifying the integration of data in content-driven
       applications.
@@ -25,16 +25,16 @@ entries:
     sources:
     - https://github.com/bitnami/bitnami-docker-mongodb
     urls:
-    - https://github.com/SouthbankSoftware/provendb-helm.git/charts/mongodb-7.8.6.tgz
+    - https://www.dbkoda.com/provendb-helm/charts/mongodb-7.8.6.tgz
     version: 7.8.6
   provendb-helm:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-03-03T13:01:28.769344+11:00"
+    created: "2020-03-03T13:24:10.272148+11:00"
     description: A ProvenDB Helm chart for Kubernetes
-    digest: c2957798c60bcd502bd653c5280dc9637ad50db4fbcbe4be38d3b98d16827d46
+    digest: a3f075a433b568441cce6f1f52668c92cdda0cd3e296817dfea2f09901fab32f
     name: provendb-helm
     urls:
-    - https://github.com/SouthbankSoftware/provendb-helm.git/provendb-helm-1.0.0.tgz
+    - https://www.dbkoda.com/provendb-helm/provendb-helm-1.0.0.tgz
     version: 1.0.0
-generated: "2020-03-03T13:01:28.76366+11:00"
+generated: "2020-03-03T13:24:10.268067+11:00"
