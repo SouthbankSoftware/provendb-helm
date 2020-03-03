@@ -38,6 +38,8 @@ helm fetch provendb/provendb-helm
 4. 
 ```
 helm install --name=suku --namespace=prd  provendb-helm-*.tgz
+
+By default, the config is set for `kubernetes on docker  desktop`. 
 ```
 5. Continue from Step 3 in the next section.
 
