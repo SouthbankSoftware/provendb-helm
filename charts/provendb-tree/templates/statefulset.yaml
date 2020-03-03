@@ -94,16 +94,20 @@ spec:
         readinessProbe:
           tcpSocket:
             port: {{ .Values.tree.host.port }}
-          initialDelaySeconds: 5
+          initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
         livenessProbe:
           tcpSocket:
             port: {{ .Values.tree.host.port }}
-          initialDelaySeconds: 5
+          initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
-        command: ["./tree"]
+        command: ["/bin/ash"]
+        args: ["-c",
+              "echo \"waiting for concierge to do the initialization\" && \
+              sleep 30 && \
+              ./tree"]
         volumeMounts:
         {{ if ne .Values.global.cloud "DOCKER_DESKTOP_KUBERNETES"}}  
           - name: tz-config
