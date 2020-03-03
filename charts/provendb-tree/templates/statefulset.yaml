@@ -98,16 +98,12 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 5
         livenessProbe:
-          tcpSocket:
-            port: {{ .Values.tree.host.port }}
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
+          exec: 
+            command:
+              - "! grep -q ERROR tree.log  && netstat -an | grep ${TREE_PORT} > /dev/null || exit 1"
         command: ["/bin/ash"]
         args: ["-c",
-              "echo \"waiting for concierge to do the initialization\" && \
-              sleep 30 && \
-              ./tree"]
+              "./tree  &> tree.log & tail -f tree.log"]
         volumeMounts:
         {{ if ne .Values.global.cloud "DOCKER_DESKTOP_KUBERNETES"}}  
           - name: tz-config
@@ -151,6 +147,8 @@ spec:
                 key: blockcypher.token 
           - name: TREE_DISABLE_OPENTRACING
             value: {{ .Values.jaegeragent.disabled | quote}}
+          - name: TREE_PORT
+            value: {{ .Values.tree.host.port | quote }}  
       volumes:
       {{ if ne .Values.global.cloud "DOCKER_DESKTOP_KUBERNETES"}}  
         - name: tz-config
