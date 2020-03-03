@@ -37,8 +37,10 @@ spec:
           volumeMounts:
             - name: {{ template "baseName" . }}-provendb-proxy-sidecar-mongodb-data
               mountPath: /data/db
+            {{ if ne .Values.global.cloud "DOCKER_DESKTOP_KUBERNETES"}}    
             - name: tz-config
               mountPath: /etc/localtime
+            {{ end }}  
           command: [ "/bin/sh", "-c", "(mongod  --fork --logpath /var/log/mongod.log  --nojournal --port 27017 --bind_ip ${BIND_IP} ) && \
                       mongo --host $BIND_IP $USER_DATABASES --port 27017 --eval \"var userPresent = db.runCommand({ usersInfo: { user: '$AUTH_USERNAME', db: '$USER_DATABASES' } }).users.length > 0;
                       if(!userPresent){
@@ -105,8 +107,10 @@ spec:
           - name: proxy-p12-file
             mountPath: /secrets/proxy-p12-file
             readOnly: true  
+          {{ if ne .Values.global.cloud "DOCKER_DESKTOP_KUBERNETES"}}    
           - name: tz-config
             mountPath: /etc/localtime   
+          {{ end }}  
           # command: ["echo", "\"a.tx\"", ">", "a.txt", "&&", "/usr/bin/tail", "-f", "a.txt"]
           command: ["/bin/ash"]
           args: [
@@ -246,9 +250,11 @@ spec:
         - name: proxy-p12-file
           secret:
             secretName: provendb
+        {{ if ne .Values.global.cloud "DOCKER_DESKTOP_KUBERNETES"}}      
         - name: tz-config
           hostPath:
             path: /usr/share/zoneinfo/Australia/Melbourne    
+        {{ end }}    
   volumeClaimTemplates:
     - metadata:
         name: {{ template "baseName" . }}-provendb-proxy-sidecar-mongodb-data

@@ -48,8 +48,10 @@ spec:
           volumeMounts:
             - name: data-badger
               mountPath: /root/data/badger
+            {{ if ne .Values.global.cloud "DOCKER_DESKTOP_KUBERNETES"}}    
             - name: tz-config
               mountPath: /etc/localtime
+            {{ end }}  
           env:
             - name: ANCHOR_ENV
               value: {{ .Values.env }}
@@ -69,9 +71,11 @@ spec:
                   key: anchor.eth.private-key
           command: ["/bin/ash", "-c", "anchor | grep -v tracing"]        
       volumes:
+      {{ if ne .Values.global.cloud "DOCKER_DESKTOP_KUBERNETES"}}  
         - name: tz-config
           hostPath:
             path: /usr/share/zoneinfo/Australia/Melbourne
+      {{ end }}      
   volumeClaimTemplates:
     - metadata:
         name: data-badger

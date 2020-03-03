@@ -36,8 +36,10 @@ spec:
         volumeMounts:
         - name: mongodb-cache-data
           mountPath: /data/db
+        {{ if ne .Values.global.cloud "DOCKER_DESKTOP_KUBERNETES"}}  
         - name: tz-config
           mountPath: /etc/localtime
+        {{ end }}  
         readinessProbe: 
           exec:
             command:
@@ -103,8 +105,10 @@ spec:
           timeoutSeconds: 5
         command: ["./tree"]
         volumeMounts:
+        {{ if ne .Values.global.cloud "DOCKER_DESKTOP_KUBERNETES"}}  
           - name: tz-config
             mountPath: /etc/localtime 
+        {{ end }}    
         env:
           - name: TREE_CACHE_DB_URI
             valueFrom:
@@ -144,9 +148,11 @@ spec:
           - name: TREE_DISABLE_OPENTRACING
             value: {{ .Values.jaegeragent.disabled | quote}}
       volumes:
+      {{ if ne .Values.global.cloud "DOCKER_DESKTOP_KUBERNETES"}}  
         - name: tz-config
           hostPath:
-            path: /usr/share/zoneinfo/Australia/Melbourne    
+            path: /usr/share/zoneinfo/Australia/Melbourne  
+      {{ end }}      
   volumeClaimTemplates:
   - metadata:
       name: mongodb-cache-data

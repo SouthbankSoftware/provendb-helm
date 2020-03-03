@@ -73,14 +73,18 @@ mongodb:
     enabled: true
     replicas:
       secondary: 0
-      arbiter: 0
-
-cloud: MINIKUBE      
+      arbiter: 0  
   
 global:
   targetDBURI: mongodb://sbs:testtest@mongodb-service/provendb
   blockcypher:
     token: 2fb5bd3c929741f9a67be3be85b3e161
+  cloud: "DOCKER_DESKTOP_KUBERNETES"  
+  # Can be one of the following:
+  # 1. GCP
+  # 2. AZURE
+  # 3. MINIKUBE
+  # 4. DOCKER_DESKTOP_KUBERNETES
 
 
    
