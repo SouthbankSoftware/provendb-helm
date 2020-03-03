@@ -38,9 +38,13 @@ helm fetch provendb/provendb-helm
 4. 
 ```
 helm install --name=suku --namespace=prd  provendb-helm-*.tgz
-
-By default, the config is set for `kubernetes on docker  desktop`. 
 ```
+By default, the config is set for `kubernetes on docker  desktop`. If you would like to change this, you can do it in the following way for instance for minikube:
+```
+helm install --name=suku --namespace=prd  provendb-helm-*.tgz --set global.cloud=MINIKUBE
+```
+Please refer `values.yaml` to see other options available.
+
 5. Continue from Step 3 in the next section.
 
 # II. Running ProvenDB from the git repo
@@ -58,6 +62,11 @@ This will download the mongodb helm chart which is the only dependency.
 helm install --name=suku --namespace=prd  .
 ```
 The release name can be anything. In this case suku.
+By default, the config is set for `kubernetes on docker  desktop`. If you would like to change this, you can do it in the following way for instance for minikube:
+```
+helm install --name=suku --namespace=prd  . --set global.cloud=MINIKUBE
+```
+Please refer `values.yaml` to see other options available.
 
 3. If you run `kubectl get pods -n prd`, you should see the list of pods. They might error initially, but eventually they should all be healthy.
 
