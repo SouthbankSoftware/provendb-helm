@@ -3,7 +3,7 @@ entries:
   mongodb:
   - apiVersion: v1
     appVersion: 4.2.3
-    created: "2020-03-03T16:05:15.45554+11:00"
+    created: "2020-03-03T16:28:53.500888+11:00"
     description: NoSQL document-oriented database that stores JSON-like documents
       with dynamic schemas, simplifying the integration of data in content-driven
       applications.
@@ -30,7 +30,7 @@ entries:
   provendb-helm:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-03-03T16:05:15.453469+11:00"
+    created: "2020-03-03T16:28:53.498473+11:00"
     description: A ProvenDB Helm chart for Kubernetes
     digest: 2a094cc484c5e285e9ac64e3520d056d16d4eeda4cb48af900bb04a1dc073971
     name: provendb-helm
@@ -46,4 +46,4 @@ entries:
     urls:
     - https://www.dbkoda.com/provendb-helm/provendb-helm-1.0.0.tgz
     version: 1.0.0
-generated: "2020-03-03T16:05:15.446868+11:00"
+generated: "2020-03-03T16:28:53.494047+11:00"

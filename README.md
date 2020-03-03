@@ -13,35 +13,33 @@ kubernetes version: 1.14.4
 
 Helm version: 2.14.3
 
-Cloud: GCP, Azure and Minikube
+Cloud: GCP, Azure, Minikube and Kubernetes on docker desktop
+
+Note: Most of the important configuration can be set by modifying values in the root `values.yaml` file. e.g. underlying infrastrcture, port numbers etc.
 
 You can install the helm chart in any one of the following two ways:
 
 # I. Running ProvenDB from the packaged helm chart
 
-The public helm repository for provendb is location on GCP. 
+Configure provendb helm repo location
 
-1. Install the helm gcs plugin from here https://github.com/hayorov/helm-gcs 
+1. 
 ```
-helm plugin install https://github.com/hayorov/helm-gcs --version 0.2.2
+helm repo add provendb https://www.dbkoda.com/provendb-helm/
 ```
-2. Add your repository to Helm
-```
-helm repo add provendb  gs://provendb-helm-charts
-```
-3. Update Helm cache
+2. Update Helm repo cache
 ```
 helm repo update
 ```
-4. Fetch the chart
+3. Fetch the chart
 ```
 helm fetch provendb/provendb-helm
 ```
-5. 
+4. 
 ```
-helm install --name=suku --namespace=prd  provendb-helm-1.0.0.tgz
+helm install --name=suku --namespace=prd  provendb-helm-*.tgz
 ```
-6. Continue from Step 3 in the next section.
+5. Continue from Step 3 in the next section.
 
 # II. Running ProvenDB from the git repo
 
@@ -67,20 +65,20 @@ kubectl get svc suku-provendb-proxy-service -n prd
 ```
 and checking the EXTERNAL-IP field. The default port to connect to is 27017
 
-4b. Otherwise, e.g. on minikube, you can do port forwarding like the following:
+4b. Otherwise, e.g. on minikube/kubernetes on docker desktop, you can do port forwarding like the following:
 ```
-minikube service suku-provendb-proxy-service -n prd
+kubectl port-forward pods/suku-provendb-proxy-statefulset-0 27018:27018 -n prd
 ```
-Looks for the IP address and the port corresponding to `mongo-suku-provendb-proxy-port`
+The IP address in this case will be `localhost` and port number `27018`
 
 5. Then you can connect to the proxy using this command:
 ```
 mongo mongodb://admin:password@<ipaddress>:<port>/provendb
 ```
 
-6. You should now be connect to proxy and create and submit proofs.
+6. You should now be able to connect to proxy and create and submit proofs.
 
-Note: Most of the important configuration can be overriden by modifiying values in the root `values.yaml` file.
+
 
 Limitations:
 ============
