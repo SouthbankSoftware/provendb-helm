@@ -34,7 +34,8 @@ minikube start --kubernetes-version=1.14.4 --cpus=6 --memory=8000mb
 ```
 
 ## Compatibility
-| Platform                      |                             Version                            |
+
+|                       |                                                         |
 | ----------------------- | :------------------------------------------------------------------: |
 | **Kubernetes**      | 1.14.4 |
 | **Helm client**      |           2.14.3            |
@@ -135,7 +136,7 @@ kubectl delete $(kubectl get pvc -n prd -o name | grep suku ) -n prd
 # Limitations:
 
 1. The connection to provendb proxy is non-ssl.
-2. Some of the configuration is different for each cloud provider. This helm chart has been tested on GCP, Azure and minikube.
+2. Some of the configuration is different for each cloud provider. This helm chart has been tested on [GCP](https://cloud.google.com/, [Azure](https://azure.microsoft.com/en-au/), [Minikube](https://kubernetes.io/docs/setup/learning-environment/minikube/) and [Kubernetes on Docker Desktop](https://www.docker.com/blog/kubernetes-is-now-available-in-docker-desktop-stable-channel/).
 
 # Contact
 
