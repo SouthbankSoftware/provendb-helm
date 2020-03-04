@@ -6,6 +6,8 @@
 
 </div>
 
+---
+
 This chart bootstraps a [ProvenDB](https://provendb.com) deployment on a Kubernetes cluster using the Helm package manager.
 ---
 ## Table of Contents
@@ -18,6 +20,8 @@ This chart bootstraps a [ProvenDB](https://provendb.com) deployment on a Kuberne
     - [II. Running ProvenDB from the Helm chart source code in this repo](#running-provendb-from-the-helm-chart-source-code-in-this-repo)
 - [Configuration](#configuration)
 - [Tear Down](#tear-down)
+- [Limitations](#limitations)
+- [Contact](#contact)
 
 ## Prerequisites:
 
@@ -111,11 +115,11 @@ You can configure the credentials in the root `values.yaml` file
 
 6. You should now be able to connect to proxy and create and submit proofs.
 
-## Configuration
+# Configuration
 
 Most of the important configuration can be set by modifying values in the root `values.yaml` file. e.g. underlying infrastrcture, port numbers, credentials etc.
 
-## Tear Down
+# Tear Down
 
 To tear down the setup down, simply
 1. Delete the helm the helm release
