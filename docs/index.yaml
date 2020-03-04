@@ -35,7 +35,7 @@ entries:
     digest: 10ef83d987c904981e266c698fb46e741860d95b39258841f7adf6f46e8e603e
     name: provendb-helm
     urls:
-    - https://www.dbkoda.com/provendb-helm/docs/provendb-helm-1.0.3.tgz
+    - https://www.dbkoda.com/provendb-helm/provendb-helm-1.0.3.tgz
     version: 1.0.3
   - apiVersion: v1
     appVersion: "1.0"
@@ -44,7 +44,7 @@ entries:
     digest: 753e18e934761c06630a05c94455d9134cd8b465a78de1cbcbd1af0d9c606be6
     name: provendb-helm
     urls:
-    - https://www.dbkoda.com/provendb-helm/docs/provendb-helm-1.0.2.tgz
+    - https://www.dbkoda.com/provendb-helm/provendb-helm-1.0.2.tgz
     version: 1.0.2
   - apiVersion: v1
     appVersion: "1.0"
@@ -53,7 +53,7 @@ entries:
     digest: 859472b4fed748a7e9c18c3ce4d525c5a17954afe47499f6fc684134c93e0f80
     name: provendb-helm
     urls:
-    - https://www.dbkoda.com/provendb-helm/docs/provendb-helm-1.0.1.tgz
+    - https://www.dbkoda.com/provendb-helm/provendb-helm-1.0.1.tgz
     version: 1.0.1
   - apiVersion: v1
     appVersion: "1.0"
@@ -62,6 +62,6 @@ entries:
     digest: be78e9e6e02e4eafdf2f028dcc3546663d077af7bad6ae4e03c028c67d292e52
     name: provendb-helm
     urls:
-    - https://www.dbkoda.com/provendb-helm/docs/provendb-helm-1.0.0.tgz
+    - https://www.dbkoda.com/provendb-helm/provendb-helm-1.0.0.tgz
     version: 1.0.0
 generated: "2020-03-04T15:09:29.509086+11:00"
