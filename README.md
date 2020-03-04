@@ -7,17 +7,17 @@
 </div>
 
 ---
-
 This chart bootstraps a [ProvenDB](https://provendb.com) deployment on a Kubernetes cluster using the Helm package manager.
----
+
+
 ## Table of Contents
 - [Helm Chart Deployment of ProvenDB](#helm-chart-deployment-of-provendb)
   - [Table of Contents](#table-of-contents)
-  - [Prerequisities](#prerequisities)
+  - [Prerequisities](#prerequisites)
   - [Compatibility](#compatibility)  
   - [Installation](#installation)
-    - [I. Running ProvenDB from already packaged helm chart](#running-provendb-from-the-packaged-helm-chart)
-    - [II. Running ProvenDB from the Helm chart source code in this repo](#running-provendb-from-the-helm-chart-source-code-in-this-repo)
+    - [1. Running ProvenDB from already packaged helm chart](#i-running-provendb-from-the-packaged-helm-chart)
+    - [2. Running ProvenDB from the Helm chart source code in this repo](#ii-running-provendb-from-the-helm-chart-source-code-in-this-repo)
 - [Configuration](#configuration)
 - [Tear Down](#tear-down)
 - [Limitations](#limitations)
@@ -33,7 +33,7 @@ This chart bootstraps a [ProvenDB](https://provendb.com) deployment on a Kuberne
 minikube start --kubernetes-version=1.14.4 --cpus=6 --memory=8000mb
 ```
 
-## Compatiblity
+## Compatibility
 | Platform                      |                             Version                            |
 | ----------------------- | :------------------------------------------------------------------: |
 | **Kubernetes**      | 1.14.4 |
