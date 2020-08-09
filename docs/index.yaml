@@ -8,7 +8,6 @@ entries:
       with dynamic schemas, simplifying the integration of data in content-driven
       applications.
     digest: 0fff698fc57d27299d78c869b3e7c5f8ede94c89ee44b2646219cb726d621fca
-    engine: gotpl
     home: https://mongodb.org
     icon: https://bitnami.com/assets/stacks/mongodb/img/mongodb-stack-220x234.png
     keywords:
@@ -30,7 +29,24 @@ entries:
   provendb-helm:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-03-04T15:09:29.526615+11:00"
+    created: "2020-08-09T13:49:45.932713+10:00"
+    dependencies:
+    - name: mongodb
+      repository: https://kubernetes-charts.storage.googleapis.com
+      version: 7.8.6
+    description: A ProvenDB Helm chart for Kubernetes
+    digest: 5c8ef27d07719b93d74aa52813328f52b37b03791948504793ec235c082a9c24
+    name: provendb-helm
+    urls:
+    - https://www.dbkoda.com/provendb-helm/provendb-helm-1.0.4.tgz
+    version: 1.0.4
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2020-08-09T13:49:45.922809+10:00"
+    dependencies:
+    - name: mongodb
+      repository: https://kubernetes-charts.storage.googleapis.com
+      version: 7.8.6
     description: A ProvenDB Helm chart for Kubernetes
     digest: 10ef83d987c904981e266c698fb46e741860d95b39258841f7adf6f46e8e603e
     name: provendb-helm
@@ -39,7 +55,11 @@ entries:
     version: 1.0.3
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-03-04T15:09:29.522299+11:00"
+    created: "2020-08-09T13:49:45.91631+10:00"
+    dependencies:
+    - name: mongodb
+      repository: https://kubernetes-charts.storage.googleapis.com
+      version: 7.8.6
     description: A ProvenDB Helm chart for Kubernetes
     digest: 753e18e934761c06630a05c94455d9134cd8b465a78de1cbcbd1af0d9c606be6
     name: provendb-helm
@@ -48,7 +68,11 @@ entries:
     version: 1.0.2
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-03-04T15:09:29.517685+11:00"
+    created: "2020-08-09T13:49:45.910144+10:00"
+    dependencies:
+    - name: mongodb
+      repository: https://kubernetes-charts.storage.googleapis.com
+      version: 7.8.6
     description: A ProvenDB Helm chart for Kubernetes
     digest: 859472b4fed748a7e9c18c3ce4d525c5a17954afe47499f6fc684134c93e0f80
     name: provendb-helm
@@ -57,11 +81,15 @@ entries:
     version: 1.0.1
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-03-04T15:09:29.514428+11:00"
+    created: "2020-08-09T13:49:45.9055+10:00"
+    dependencies:
+    - name: mongodb
+      repository: https://kubernetes-charts.storage.googleapis.com
+      version: 7.8.6
     description: A ProvenDB Helm chart for Kubernetes
     digest: be78e9e6e02e4eafdf2f028dcc3546663d077af7bad6ae4e03c028c67d292e52
     name: provendb-helm
     urls:
     - https://www.dbkoda.com/provendb-helm/provendb-helm-1.0.0.tgz
     version: 1.0.0
-generated: "2020-03-04T15:09:29.509086+11:00"
+generated: "2020-08-09T13:49:45.89805+10:00"

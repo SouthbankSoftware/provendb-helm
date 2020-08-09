@@ -55,8 +55,31 @@ provendb-anchor:
       tag: prd
     verifier:
       uriPrefix: http://localhost:11000
-    endpoint: https://rinkeby.infura.io/v3/ba25a62205f24e5bb74d4f9738910a83
-    private-key: EB3AF8DD18646CBF1BFAF5644338D7941909718C2FFFE170E4D5F6860A88AFE5
+    hedera:
+      mainnet:
+        enabled: false
+      testnet:
+        enabled: false
+    eth:
+      elastos:
+        enabled: false  
+      mainnet:
+        enabled: false
+      testnet:
+        enabled: true  
+        endpoint: https://rinkeby.infura.io/v3/ba25a62205f24e5bb74d4f9738910a83
+        privatekey: EB3AF8DD18646CBF1BFAF5644338D7941909718C2FFFE170E4D5F6860A88AFE5
+        batch:
+          size: 16384
+          time: "30s"
+          ttl: "12h"
+        gasPrice: "0"
+        txnTimeout: "1h"
+    btc:
+      testnet:
+        enabled: false
+      mainnet: 
+        enabled: false              
   env: prd   
   prometheus: 
     enable: false
@@ -79,7 +102,7 @@ global:
   targetDBURI: mongodb://sbs:testtest@mongodb-service/provendb
   blockcypher:
     token: 2fb5bd3c929741f9a67be3be85b3e161
-  cloud: "DOCKER_DESKTOP_KUBERNETES"  
+  cloud: "MINIKUBE"  
   # Can be one of the following:
   # 1. GCP
   # 2. AZURE

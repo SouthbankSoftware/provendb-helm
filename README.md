@@ -25,20 +25,19 @@ This chart bootstraps a [ProvenDB](https://provendb.com) deployment on a Kuberne
 
 ## Prerequisites:
 
-1. You should have a kubernetes cluster running and `kubectl` should point to it. 
-2. There should be `helm2.x` installed on the client machine. For instructions, you can refer here https://helm.sh/docs/intro/install/
-3. The kubernetes cluster should have `tiller` installed. For installation of tiller, please refer https://codereviewvideos.com/course/installing-kubernetes-rancher-2-terraform/video/install-tiller-kubernetes-cluster
+1. You should have a kubernetes cluster running and `kubectl` should point to it.
+2. There should be `helm3.x` installed on the client machine. For instructions, you can refer here https://helm.sh/docs/intro/install/
 4. Make sure you have enough resources in the k8s cluster. The following works on minikube
 ```
-minikube start --kubernetes-version=1.14.4 --cpus=6 --memory=8000mb
+minikube start --kubernetes-version=1.16.7 --cpus=6 --memory=8000mb
 ```
 
 ## Compatibility
 
 |                       |                                                         |
 | ----------------------- | :------------------------------------------------------------------: |
-| **Kubernetes**      | 1.14.4 |
-| **Helm client**      |           2.14.3            |
+| **Kubernetes**      | 1.16.7 |
+| **Helm client**      |           3.2.0            |
 | **Underlying Infrastructure** |             GCP, Azure, Minikube and Kubernetes on Docker Desktop for Mac              |
 
 ## Installation 
@@ -84,13 +83,14 @@ helm dependency update
 This will download the mongodb helm chart which is the only dependency.
 
 2. Install the helm charts
+First, create the necessary namespace
 ```
-helm install --name=suku --namespace=prd  .
+helm install suku --namespace=prd  .
 ```
 The release name can be anything. In this case suku.
 By default, the config is set for `kubernetes on docker  desktop`. If you would like to change this, you can do it in the following way for instance for minikube:
 ```
-helm install --name=suku --namespace=prd  . --set global.cloud=MINIKUBE
+helm install suku --namespace=prd  . --set global.cloud=MINIKUBE
 ```
 Please refer `values.yaml` to see other options available.
 
@@ -116,6 +116,16 @@ You can configure the credentials in the root `values.yaml` file
 
 6. You should now be able to connect to proxy and create and submit proofs.
 
+# Using Proxy
+
+Once you have all the services marked as healthy, you can connect to proxy and submit proofs. By default, anchoring to only Ethereum testnet is configured. You can refer [values.yaml](values.yaml) here to support other blockchains.
+
+```
+mongo mongodb://admin:password@<ipaddress>:<port>/provendb
+db.runCommand({submitProof: 1, anchorType: "ETH" })
+db.runCommand({getProof: "<proofID>"})
+```
+
 # Configuration
 
 Most of the important configuration can be set by modifying values in the root `values.yaml` file. e.g. underlying infrastrcture, port numbers, credentials etc.
@@ -125,7 +135,7 @@ Most of the important configuration can be set by modifying values in the root `
 To tear down the setup down, simply
 1. Delete the helm the helm release
 ```
-helm delete suku --purge
+helm delete suku -n prd
 ```
 2. Delete the pvcs associated with it
 ```

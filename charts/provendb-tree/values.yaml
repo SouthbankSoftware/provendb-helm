@@ -8,7 +8,7 @@ safeToEvict: true
 
 tree:
   image:
-    repository: asia.gcr.io/provendb/provendb-tree
+    repository: southbanksoftware/provendb-tree
     tag: latest
   resources: 
     requests:
@@ -20,7 +20,7 @@ tree:
   host:
     port: 10000
   targetDB: "provendocs-helm"  
-  env: "dev"
+  env: "prd"
 
 prometheus:
     enable: true

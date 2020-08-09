@@ -3,7 +3,7 @@ istioSidecarInject: false
 safeToEvict: true
 
 image:
-  repository: asia.gcr.io/provendb/provendb-concierge
+  repository: southbanksoftware/provendb-concierge
   tag: latest
 
 env: "prd"

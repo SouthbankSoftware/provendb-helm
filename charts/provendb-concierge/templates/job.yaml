@@ -4,7 +4,6 @@ metadata:
   name: {{ template "baseName" . }}-provendb-concierge
   namespace: {{ .Release.Namespace }}
 spec:
-  replicas: 1
   template:
     metadata:
       labels:
