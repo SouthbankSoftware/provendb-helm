@@ -42,6 +42,8 @@ minikube start --kubernetes-version=1.16.7 --cpus=6 --memory=8000mb
 
 ## Installation 
 
+If you have a previously installed this chart and want to test the udpated helm chart, make sure you follow [Tear Down ](#tear-down) first.
+
 You can install the helm chart in any one of the following two ways:
 
 ### I. Running ProvenDB from the packaged helm chart
@@ -58,11 +60,12 @@ helm repo update
 ```
 3. Fetch the chart
 ```
+rm  provendb-helm-*.tgz
 helm fetch provendb/provendb-helm
 ```
 4. 
 ```
-helm install --name=suku --namespace=prd  provendb-helm-*.tgz
+helm install suku --namespace=prd  provendb-helm-*.tgz
 ```
 By default, the config is set for `kubernetes on docker  desktop`. If you would like to change this, you can do it in the following way for instance for minikube:
 ```
