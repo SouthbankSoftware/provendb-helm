@@ -4,8 +4,8 @@ safeToEvict: true
 
 anchor:
   image:
-    repository: asia.gcr.io/provendb/provendb-anchor
-    tag: latest
+    repository: southbanksoftware/provendb/provendb-anchor
+    tag: prd
   resources: 
     requests:
       memory: "300Mi"
@@ -81,7 +81,7 @@ anchor:
         privateKey: anchor.hedera.testnet.private-key
         topicId: anchor.hedera.testnet.topic-id
     mainnet:
-      enabled: true
+      enabled: false
       batch:
         size: 3072
         time: "3s"

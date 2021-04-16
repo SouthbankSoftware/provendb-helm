@@ -65,12 +65,14 @@ helm fetch provendb/provendb-helm
 ```
 4. 
 ```
-helm install suku --namespace=prd  provendb-helm-*.tgz
+helm install myProvenDB  provendb-helm-*.tgz
 ```
 By default, the config is set for `kubernetes on docker  desktop`. If you would like to change this, you can do it in the following way for instance for minikube:
 ```
-helm install --name=suku --namespace=prd  provendb-helm-*.tgz --set global.cloud=MINIKUBE
+helm install myProvenDB   provendb-helm-*.tgz --set global.cloud=MINIKUBE
 ```
+The sample file `minikube.sh` provides a quick start for isnstalling provendb in a minikube environment 
+
 Please refer `values.yaml` to see other options available.
 
 5. Continue from Step 3 in the next section.
@@ -88,12 +90,12 @@ This will download the mongodb helm chart which is the only dependency.
 2. Install the helm charts
 First, create the necessary namespace
 ```
-helm install suku --namespace=prd  .
+helm install myProvenDB --namespace=prd  .
 ```
-The release name can be anything. In this case suku.
+The release name can be anything. In this case myProvenDB.
 By default, the config is set for `kubernetes on docker  desktop`. If you would like to change this, you can do it in the following way for instance for minikube:
 ```
-helm install suku --namespace=prd  . --set global.cloud=MINIKUBE
+helm install myProvenDB --namespace=prd  . --set global.cloud=MINIKUBE
 ```
 Please refer `values.yaml` to see other options available.
 
@@ -101,15 +103,15 @@ Please refer `values.yaml` to see other options available.
 
 4a. On cloud providers that support load balancers, an external IP address would be provisioned to access the proxy service. You can get the external IP for the proxy service by running the folowing:
 ```
-kubectl get svc suku-provendb-proxy-service -n prd
+kubectl get svc myProvenDB-provendb-proxy-service -n prd
 ```
-and checking the EXTERNAL-IP field. The default port to connect to is 27017
+and checking the EXTERNAL-IP field. The default port to connect to is 27018
 
 4b. Otherwise, e.g. on minikube/kubernetes on docker desktop, you can do port forwarding like the following:
 ```
-kubectl port-forward pods/suku-provendb-proxy-statefulset-0 27017:27018 -n prd
+kubectl port-forward pods/myProvenDB-provendb-proxy-statefulset-0 27018:27018 -n prd
 ```
-The IP address in this case will be `localhost` and port number `27017`
+The IP address in this case will be `localhost` and port number `27018`
 
 5. Then you can connect to the proxy using this command:
 ```
@@ -138,11 +140,11 @@ Most of the important configuration can be set by modifying values in the root `
 To tear down the setup down, simply
 1. Delete the helm the helm release
 ```
-helm delete suku -n prd
+helm delete myProvenDB -n prd
 ```
 2. Delete the pvcs associated with it
 ```
-kubectl delete $(kubectl get pvc -n prd -o name | grep suku ) -n prd
+kubectl delete $(kubectl get pvc -n prd -o name | grep myProvenDB ) -n prd
 ```
 
 
