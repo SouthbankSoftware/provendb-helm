@@ -9,7 +9,7 @@ helm install myprovendb --namespace=prd  . --set global.cloud=MINIKUBE
 let down=1
 while [  $down -ge 1 ];do
     let down=0
-    kubectl get pods|tail -n +2|while read LINE;do
+    kubectl get pods -n prd|tail -n +2|while read LINE;do
         podstatus=`echo $LINE|awk '{print $3}'`
         echo $podstatus
         if [ "$podstatus" != "Running" ] && [ $podstatus != "Completed" ]; then 

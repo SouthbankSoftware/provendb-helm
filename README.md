@@ -22,7 +22,7 @@ This chart bootstraps a [ProvenDB](https://provendb.com) deployment on a Kuberne
 2. There should be `helm3.x` installed on the client machine. For instructions, you can refer here https://helm.sh/docs/intro/install/
 4. Make sure you have enough resources in the k8s cluster. The following works on minikube
 ```
-minikube start --kubernetes-version=1.16.7 --cpus=6 --memory=8000mb
+minikube start  --cpus=6 --memory=8000mb
 ```
 
 ## Compatibility
