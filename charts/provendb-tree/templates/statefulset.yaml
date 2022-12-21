@@ -1,0 +1,170 @@
+##################################################################################################
+# Deployment
+##################################################################################################
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ template "baseName" . }}-provendb-tree-statefulset
+  namespace: {{ .Release.Namespace }}
+spec:
+  serviceName: {{ template "baseName" . }}-provendb-tree-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "baseName" . }}-provendb-tree
+      team: {{ .Values.kubecost.teamName }}
+      product: {{ .Values.kubecost.productName }}
+      env: {{ .Release.Namespace }}
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: {{ .Values.prometheus.enable | quote }}
+        prometheus.io/port: {{ .Values.prometheus.port | quote }}
+        prometheus.io/scheme: http
+        sidecar.istio.io/inject: {{ .Values.istioSidecarInject | quote }} 
+        cluster-autoscaler.kubernetes.io/safe-to-evict: {{ .Values.safeToEvict | quote }} 
+      labels:
+        app: {{ template "baseName" . }}-provendb-tree
+        team: {{ .Values.kubecost.teamName }}
+        product: {{ .Values.kubecost.productName }}
+        env: {{ .Release.Namespace }}
+    spec:
+      containers:
+      - name: mongodb-cache
+        image: {{ .Values.mongodbcache.image.repository }}:{{ .Values.mongodbcache.image.tag }}
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: mongodb-cache-data
+          mountPath: /data/db
+        {{ if ne .Values.global.cloud "DOCKER_DESKTOP_KUBERNETES"}}  
+        - name: tz-config
+          mountPath: /etc/localtime
+        {{ end }}  
+        readinessProbe: 
+          exec:
+            command:
+            - bash
+            - "-c"
+            - |
+              mongo --eval "db.stats()" --port ${MONGODBCACHE_PORT} --host ${MONGODBCACHE_BIND_IP}
+          initialDelaySeconds: 60 #wait this period after staring fist time
+          periodSeconds: 30    # polling interval every 30 seconds
+          timeoutSeconds: 60 
+        livenessProbe: 
+          exec:
+            command:
+            - bash
+            - "-c"
+            - |
+              mongo --eval "db.stats()" --port ${MONGODBCACHE_PORT} --host ${MONGODBCACHE_BIND_IP}
+          initialDelaySeconds: 60 #wait this period after staring fist time
+          periodSeconds: 30    # polling interval every 30 seconds
+          timeoutSeconds: 60   
+        command: ["/bin/bash", "-c"]
+        # args: ["-c","tail -f /etc/hosts"]
+        args: [ "-c", "(mongod  --fork --logpath /var/log/mongod.log --port ${MONGODBCACHE_PORT} --bind_ip ${MONGODBCACHE_BIND_IP} --replSet test) && \
+                                    mongo --eval \"rs.initiate({_id: 'test',
+                                                                members: [
+                                                                    {
+                                                                    _id: 0,
+                                                                    host: '127.0.0.1:${MONGODBCACHE_PORT}'
+                                                                    },
+                                                                ]
+                                                                })\" --port ${MONGODBCACHE_PORT} --host 127.0.0.1 && \
+                                    tail -f /var/log/mongod.log"]
+        env:
+          - name: MONGODBCACHE_BIND_IP
+            valueFrom:
+              configMapKeyRef:
+                name: {{ template "baseName" . }}-provendb-tree-configmap
+                key: mongodbcache.bind.ip
+          - name: MONGODBCACHE_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: {{ template "baseName" . }}-provendb-tree-configmap
+                key: mongodbcache.port
+      - name: tree-service
+        image: {{ .Values.tree.image.repository }}:{{ .Values.tree.image.tag }}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: {{ .Values.tree.host.port }}
+        - containerPort: {{ .Values.prometheus.port }}
+        resources: 
+{{ toYaml .Values.tree.resources | indent 10 }}  
+        readinessProbe:
+          tcpSocket:
+            port: {{ .Values.tree.host.port }}
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+        livenessProbe:
+          exec: 
+            command: 
+              - /bin/ash
+              - -c
+              - (! grep -q ERROR /tree.log  && netstat -an | grep ${TREE_PORT} > /dev/null) || exit 1
+          initialDelaySeconds: 15
+          periodSeconds: 10
+        command: ["/bin/ash"]
+        args: ["-c",
+              "./tree   2>&1 | tee tree.log"]
+        volumeMounts:
+        {{ if ne .Values.global.cloud "DOCKER_DESKTOP_KUBERNETES"}}  
+          - name: tz-config
+            mountPath: /etc/localtime 
+        {{ end }}    
+        env:
+          - name: TREE_CACHE_DB_URI
+            valueFrom:
+              configMapKeyRef:
+                name: {{ template "baseName" . }}-provendb-tree-configmap
+                key: tree.cachedb.uri
+          - name: TREE_HOST_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: {{ template "baseName" . }}-provendb-tree-configmap
+                key: tree.host.port
+          - name: mongoUri
+            valueFrom:
+              secretKeyRef:
+                name: provendb
+                key: targetDBUri      
+          - name: TREE_ENV
+            valueFrom:
+              configMapKeyRef:
+                name: {{ template "baseName" . }}-provendb-tree-configmap
+                key: tree.env
+          - name: mongoTargetDB
+            valueFrom:
+              configMapKeyRef:
+                name: {{ template "baseName" . }}-provendb-tree-configmap
+                key: tree.mongo.targetDB    
+          - name: TREE_JAEGER_AGENT_HOST_PORT   
+            valueFrom:
+              configMapKeyRef:
+                name: {{ template "baseName" . }}-provendb-tree-configmap
+                key: jaeger-agent.host.port  
+          - name: PROVENDB_VERIFY_BCTOKEN
+            valueFrom:
+              secretKeyRef:
+                name: provendb
+                key: blockcypher.token 
+          - name: TREE_DISABLE_OPENTRACING
+            value: {{ .Values.jaegeragent.disabled | quote}}
+          - name: TREE_PORT
+            value: {{ .Values.tree.host.port | quote }}  
+      volumes:
+      {{ if ne .Values.global.cloud "DOCKER_DESKTOP_KUBERNETES"}}  
+        - name: tz-config
+          hostPath:
+            path: /usr/share/zoneinfo/Australia/Melbourne  
+      {{ end }}      
+  volumeClaimTemplates:
+  - metadata:
+      name: mongodb-cache-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: fast
+      resources:
+        requests:
+          storage: {{ .Values.mongodbcache.size }}

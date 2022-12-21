@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "baseName" . }}-provendb-concierge
+  namespace: {{ .Release.Namespace }}
+spec:
+  template:
+    metadata:
+      labels:
+        app: {{ template "baseName" . }}-provendb-concierge
+        env: {{ .Release.Namespace }}
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: concierge
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          resources:
+            requests:
+              memory: "400Mi"
+              cpu: "800m"
+          volumeMounts:    
+            - name: tz-config
+              mountPath: /etc/localtime  
+          env:
+            - name: CONCIERGE_ENV
+              value: {{ .Values.env }}
+            - name: ENV_PROVENDB_MONGO_URI
+              valueFrom:
+                secretKeyRef:
+                  name: provendb
+                  key: targetDBUri  
+          command: ["/bin/ash", "-c", "concierge schema --uri $ENV_PROVENDB_MONGO_URI"]    
+      volumes:
+        - name: tz-config
+          hostPath:
+            path: /usr/share/zoneinfo/Australia/Melbourne
+
+
+              

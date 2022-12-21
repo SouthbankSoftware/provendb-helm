@@ -1,0 +1,224 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ template "baseName" . }}-provendb-anchor-statefulset
+  namespace: {{ .Release.Namespace }}
+spec:
+  serviceName: {{ template "baseName" . }}-provendb-anchor-service
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "baseName" . }}-provendb-anchor
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: {{ .Values.prometheus.enable | quote }}
+        prometheus.io/port: {{ .Values.prometheus.port | quote }}
+        prometheus.io/scheme: http
+        sidecar.istio.io/inject: {{ .Values.istioSidecarInject | quote }}
+        cluster-autoscaler.kubernetes.io/safe-to-evict: {{ .Values.safeToEvict | quote }}
+      labels:
+        app: {{ template "baseName" . }}-provendb-anchor
+        team: {{ .Values.kubecost.teamName }}
+        product: {{ .Values.kubecost.productName }}
+        env: {{ .Release.Namespace }}
+    spec:
+      containers:
+        - name: anchor-service
+          image: {{ .Values.anchor.image.repository }}:{{ .Values.anchor.image.tag }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: {{ .Values.anchor.port }}
+            - containerPort: {{ .Values.anchor.verifier.port }}
+            - containerPort: {{ .Values.prometheus.port }}
+          resources:
+{{ toYaml .Values.anchor.resources | trim | indent 12 }}
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.anchor.port }}
+            initialDelaySeconds: 2
+            periodSeconds: 10
+            timeoutSeconds: 20
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.anchor.port }}
+            initialDelaySeconds: 2
+            periodSeconds: 10
+            timeoutSeconds: 20
+          volumeMounts:
+            - name: data-badger
+              mountPath: /root/data/badger
+            {{- if ne .Values.global.cloud "DOCKER_DESKTOP_KUBERNETES"}}    
+            - name: tz-config
+              mountPath: /etc/localtime
+            {{- end }}  
+          env:
+            - name: ANCHOR_ENV
+              value: {{ .Values.env }}
+            - name: ANCHOR_VERIFIER_HOST_PORT
+              value: "0.0.0.0:{{ .Values.anchor.verifier.port }}"
+            - name: ANCHOR_VERIFIER_URI_PREFIX
+              value: {{ .Values.anchor.verifier.uriPrefix }}
+            # ETH (testnet)
+            - name: ANCHOR_ETH_ENABLED
+              value: {{ .Values.anchor.eth.testnet.enabled | quote }}
+            {{- if .Values.anchor.eth.testnet.enabled }}  
+            - name: ANCHOR_ETH_BATCH_SIZE
+              value: {{ .Values.anchor.eth.testnet.batch.size | quote  }}
+            - name: ANCHOR_ETH_BATCH_TIME
+              value: {{ .Values.anchor.eth.testnet.batch.time | quote }}
+            - name: ANCHOR_ETH_BATCH_TTL
+              value: {{ .Values.anchor.eth.testnet.batch.ttl | quote }}
+            - name: ANCHOR_ETH_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: provendb
+                  key: anchor.eth.testnet.secretKey.endpoint
+            - name: ANCHOR_ETH_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: provendb
+                  key: anchor.eth.testnet.secretKey.privateKey
+            - name: ANCHOR_ETH_GAS_PRICE
+              value: {{ .Values.anchor.eth.testnet.gasPrice | quote }}
+            - name: ANCHOR_ETH_TXN_TIMEOUT
+              value: {{ .Values.anchor.eth.testnet.txnTimeout | quote }}
+            {{- end }}  
+            # ETH_MAINNET
+            - name: ANCHOR_ETH_MAINNET_ENABLED
+              value: {{ .Values.anchor.eth.mainnet.enabled | quote  }}    
+            {{- if .Values.anchor.eth.mainnet.enabled }}  
+            - name: ANCHOR_ETH_MAINNET_BATCH_SIZE
+              value: {{ .Values.anchor.eth.mainnet.batch.size | quote  }}  
+            - name: ANCHOR_ETH_MAINNET_BATCH_TIME
+              value: {{ .Values.anchor.eth.mainnet.batch.time | quote }}
+            - name: ANCHOR_ETH_MAINNET_BATCH_TTL
+              value: {{ .Values.anchor.eth.mainnet.batch.ttl | quote }}    
+            - name: ANCHOR_ETH_MAINNET_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: provendb
+                  key: {{ .Values.anchor.eth.mainnet.secretKey.endpoint }}
+            - name: ANCHOR_ETH_MAINNET_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: provendb
+                  key: {{ .Values.anchor.eth.mainnet.secretKey.privateKey }}
+            - name: ANCHOR_ETH_MAINNET_GAS_PRICE
+              value: {{ .Values.anchor.eth.mainnet.gasPrice | quote }}
+            - name: ANCHOR_ETH_MAINNET_TXN_TIMEOUT
+              value: {{ .Values.anchor.eth.mainnet.txnTimeout | quote }}
+            {{- end }}    
+            # ETH_ELATSOS (MAINNET/TESTNET)
+            - name: ANCHOR_ETH_ELASTOS_ENABLED
+              value: {{ .Values.anchor.eth.elastos.enabled | quote  }}    
+            {{- if .Values.anchor.eth.elastos.enabled }}  
+            - name: ANCHOR_ETH_ELASTOS_BATCH_SIZE
+              value: {{ .Values.anchor.eth.elastos.batch.size | quote  }}  
+            - name: ANCHOR_ETH_ELASTOS_BATCH_TIME
+              value: {{ .Values.anchor.eth.elastos.batch.time | quote }}
+            - name: ANCHOR_ETH_ELASTOS_BATCH_TTL
+              value: {{ .Values.anchor.eth.elastos.batch.ttl | quote }}    
+            - name: ANCHOR_ETH_ELASTOS_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: provendb
+                  key: {{ .Values.anchor.eth.elastos.secretKey.endpoint }}
+            - name: ANCHOR_ETH_ELASTOS_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: provendb
+                  key: {{ .Values.anchor.eth.elastos.secretKey.privateKey }}
+            - name: ANCHOR_ETH_ELASTOS_GAS_PRICE
+              value: {{ .Values.anchor.eth.elastos.gasPrice | quote }}
+            - name: ANCHOR_ETH_ELASTOS_TXN_TIMEOUT
+              value: {{ .Values.anchor.eth.elastos.txnTimeout | quote }}
+            {{- end }}  
+            # BTC (testnet)
+            - name: ANCHOR_BTC_ENABLED
+              value: {{ .Values.anchor.btc.testnet.enabled | quote }}
+            {{- if .Values.anchor.btc.testnet.enabled }}  
+            - name: ANCHOR_BTC_BATCH_SIZE
+              value: {{ .Values.anchor.btc.testnet.batch.size | quote }}
+            - name: ANCHOR_BTC_BATCH_TIME
+              value: {{ .Values.anchor.btc.testnet.batch.time | quote }}
+            - name: ANCHOR_BTC_BATCH_TTL
+              value: {{ .Values.anchor.btc.testnet.batch.ttl | quote }}
+            - name: ANCHOR_BTC_WALLET_HOST_PORT
+              value: {{ .Values.anchor.btc.testnet.walletHostPort }}
+            - name: ANCHOR_BTC_TXN_FEE_LEVEL
+              value: {{ .Values.anchor.btc.testnet.txnFeeLevel }}
+            {{- end }}  
+            # BTC_MAINNET
+            - name: ANCHOR_BTC_MAINNET_ENABLED
+              value: {{ .Values.anchor.btc.mainnet.enabled | quote }}
+            {{- if .Values.anchor.btc.mainnet.enabled }}  
+            - name: ANCHOR_BTC_MAINNET_BATCH_SIZE
+              value: {{ .Values.anchor.btc.mainnet.batch.size | quote }}
+            - name: ANCHOR_BTC_MAINNET_BATCH_TIME
+              value: {{ .Values.anchor.btc.mainnet.batch.time | quote }}
+            - name: ANCHOR_BTC_MAINNET_BATCH_TTL
+              value: {{ .Values.anchor.btc.mainnet.batch.ttl | quote }}   
+            - name: ANCHOR_BTC_MAINNET_WALLET_HOST_PORT
+              value: {{ .Values.anchor.btc.mainnet.walletHostPort }}
+            - name: ANCHOR_BTC_MAINNET_TXN_FEE_LEVEL
+              value: {{ .Values.anchor.btc.mainnet.txnFeeLevel }}
+            {{- end }}
+            # HEDERA (testnet)
+            - name: ANCHOR_HEDERA_ENABLED
+              value: {{ .Values.anchor.hedera.testnet.enabled | quote }}
+            {{- if .Values.anchor.hedera.testnet.enabled }}
+            - name: ANCHOR_HEDERA_BATCH_SIZE
+              value: {{ .Values.anchor.hedera.testnet.batch.size | quote }}
+            - name: ANCHOR_HEDERA_BATCH_TIME
+              value: {{ .Values.anchor.hedera.testnet.batch.time | quote }}
+            - name: ANCHOR_HEDERA_BATCH_TTL
+              value: {{ .Values.anchor.hedera.testnet.batch.ttl | quote }}
+            - name: ANCHOR_HEDERA_ACCOUNT_ID
+              value: {{ .Values.anchor.hedera.testnet.accountId }}
+            - name: ANCHOR_HEDERA_PRIVATE_KEY
+              value: {{ .Values.anchor.hedera.testnet.privateKey |quote}}
+            - name: ANCHOR_HEDERA_TOPIC_ID
+              value: {{ .Values.anchor.hedera.testnet.topicId }}
+            {{- end }}
+            # HEDERA_MAINNET
+            - name: ANCHOR_HEDERA_MAINNET_ENABLED
+              value: {{ .Values.anchor.hedera.mainnet.enabled | quote }}
+            {{- if .Values.anchor.hedera.mainnet.enabled }}
+            - name: ANCHOR_HEDERA_MAINNET_BATCH_SIZE
+              value: {{ .Values.anchor.hedera.mainnet.batch.size | quote }}
+            - name: ANCHOR_HEDERA_MAINNET_BATCH_TIME
+              value: {{ .Values.anchor.hedera.mainnet.batch.time | quote }}
+            - name: ANCHOR_HEDERA_MAINNET_BATCH_TTL
+              value: {{ .Values.anchor.hedera.mainnet.batch.ttl | quote }}
+            - name: ANCHOR_HEDERA_MAINNET_ACCOUNT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: provendb
+                  key: {{ .Values.anchor.hedera.mainnet.secretKey.accountId }}
+            - name: ANCHOR_HEDERA_MAINNET_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: provendb
+                  key: {{ .Values.anchor.hedera.mainnet.secretKey.privateKey }}
+            - name: ANCHOR_HEDERA_MAINNET_TOPIC_ID
+              valueFrom:
+                secretKeyRef:
+                  name: provendb
+                  key: {{ .Values.anchor.hedera.mainnet.secretKey.topicId }}
+            {{- end }}
+      volumes:
+      {{ if ne .Values.global.cloud "DOCKER_DESKTOP_KUBERNETES"}}        
+        - name: tz-config
+          hostPath:
+            path: /usr/share/zoneinfo/Australia/Melbourne
+      {{ end }}      
+  volumeClaimTemplates:
+    - metadata:
+        name: data-badger
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: fast
+        resources:
+          requests:
+            storage: {{ .Values.anchor.badger.size }}

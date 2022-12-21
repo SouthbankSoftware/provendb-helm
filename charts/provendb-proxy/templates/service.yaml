@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Service
+metadata:
+{{- with .Values.proxy.domainName }}
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: {{ . }}
+    external-dns.alpha.kubernetes.io/ttl: "180"
+{{- end }}
+  name: {{ template "baseName" . }}-provendb-proxy-service
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    app: {{ template "baseName" . }}-provendb-proxy
+  ports:
+    - name: mongo-{{ template "baseName" . }}-provendb-proxy-port
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.proxy.port }} 
+      protocol: TCP
+    - name: http-prometheus-port
+      port: 9091
+      targetPort: 9091
+      protocol: TCP
+    - name: grpc-port
+      port: {{ .Values.proxy.grpc.port }}
+      targetPort: {{ .Values.proxy.grpc.port }}
+      protocol: TCP  
+  type: {{  .Values.service.type }} 
+  {{- if eq  .Values.service.type "LoadBalancer"}}
+  loadBalancerSourceRanges:
+  {{- range .Values.service.loadBalancerSourceRanges}}
+    - {{ . }}
+  {{else}}
+    - 0.0.0.0/0
+  {{- end -}}
+  {{end -}}

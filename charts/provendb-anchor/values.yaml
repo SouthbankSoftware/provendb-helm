@@ -1,0 +1,106 @@
+replicaCount: 1
+istioSidecarInject: false
+safeToEvict: true
+
+anchor:
+  image:
+    repository: southbanksoftware/provendb/provendb-anchor
+    tag: prd
+  resources: 
+    requests:
+      memory: "300Mi"
+      cpu: "300m"
+    limits:
+      memory: "3Gi"
+      cpu: 3
+  port: 10008
+  verifier:
+    port: 11000
+    uriPrefix: https://anchor.provendb.com
+  badger:
+    size: 30Gi
+  eth:
+    testnet:
+      enabled: true
+      endpoint: https://rinkeby.infura.io/v3/ba25a62205f24e5bb74d4f9738910a83
+      privatekey: EB3AF8DD18646CBF1BFAF5644338D7941909718C2FFFE170E4D5F6860A88AFE5
+      batch:
+        size: 16384
+        time: "30s"
+        ttl: "12h"
+      gasPrice: "0"
+      txnTimeout: "1h"
+    mainnet:
+      enabled: false
+      secretKey:
+        endpoint: anchor.eth.mainnet.endpoint
+        privateKey: anchor.eth.mainnet.private-key
+      batch:
+        size: 32768
+        time: "5m"
+        ttl: "12h"
+      gasPrice: "0"
+      txnTimeout: "1h"
+    elastos:
+      enabled: false
+      secretKey:
+        endpoint: anchor.eth.elastos.endpoint
+        privateKey: anchor.eth.elastos.private-key
+      batch:
+        size: 16384
+        time: "30s"
+        ttl: "12h"
+      gasPrice: "0"
+      txnTimeout: "1h"  
+  btc:
+    testnet:
+      enabled: false
+      batch:
+        size: 32768
+        time: "1m"
+        ttl: "48h"
+      walletHostPort: provendb-btcspvwallet-service:10012
+      txnFeeLevel: NORMAL
+    mainnet:
+      enabled: false
+      batch:
+        size: 32768
+        time: "1m"
+        ttl: "48h"
+      walletHostPort: provendb-btcspvwallet-mainnet-service:10012
+      txnFeeLevel: NORMAL
+  hedera:
+    testnet:
+      enabled: true
+      batch:
+            size: 3072
+            time: "3s"
+            ttl: "15m"
+      accountId: "0.0.32921"
+      privateKey: 302e020100300506032b657004220420e480c306b0a17ba184a9809ee59afe9fac37901afa9899f3f8db6d70bc4009b9
+      topicId: "0.0.32923"
+    mainnet:
+      enabled: false
+      batch:
+        size: 3072
+        time: "3s"
+        ttl: "15m"
+      secretKey:
+        accountId: anchor.hedera.mainnet.account-id
+        privateKey: anchor.hedera.mainnet.private-key
+        topicId: anchor.hedera.mainnet.topic-id
+
+env: dev
+logLevel: "" # leave empty for auto-config using "env"
+
+prometheus:
+  enable: true
+  port: 10009
+
+jaegeragent:
+  hostPort: jaeger-agent.istio-system.svc.cluster.local:6831
+
+kubecost:
+  teamName: blockchain  
+  productName: anchor  
+

@@ -1,0 +1,21 @@
+##################################################################################################
+# Treeservice service
+##################################################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "baseName" . }}-provendb-tree-service
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+    - port: {{ .Values.tree.host.port }}
+      targetPort: {{ .Values.tree.host.port }}
+      protocol: TCP
+      name: grpc-{{ template "baseName" . }}-provendb-tree-port
+    - port: {{ .Values.prometheus.port }}
+      targetPort: {{ .Values.prometheus.port }}
+      protocol: TCP
+      name: http-{{ template "baseName" . }}-provendb-tree-prometheus-port  
+  selector:
+    app: {{ template "baseName" . }}-provendb-tree
+---    

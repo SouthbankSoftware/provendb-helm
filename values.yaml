@@ -1,0 +1,123 @@
+provendb-proxy:
+  enabled: true
+  proxy:
+    image:
+      repository: southbanksoftware/provendb-proxy
+      tag: prd 
+    prometheus: 
+      enable: false  
+    service:
+      type: LoadBalancer
+    auth:
+      enabled: "true"
+      password: password
+      uri: mongodb://localhost:27017
+      username: admin
+    sidecarmongodb:
+      bindip: 127.0.0.1
+      image:
+        repository: mongo
+        tag: 4.2.0
+      port: 27017
+    sslEnabled: "false"
+    userDatabases: provendb
+    env: prd
+
+provendb-tree:
+  enabled: true
+  tree:
+    targetDB: "provendb"
+    image:
+      repository: southbanksoftware/provendb-tree
+      tag: prd
+    env: prd  
+  jaegeragent: 
+    host:
+      port: "" 
+    disabled: true
+      
+
+provendb-concierge:
+  enabled: true
+  grpc:
+    port: 10002
+  prometheus:
+    port: 10003  
+  image:
+      repository: southbanksoftware/provendb-concierge
+      tag: prd  
+
+provendb-anchor:
+  enabled: true
+  anchor:
+    image:
+      repository: southbanksoftware/provendb-anchor
+      tag: prd
+    verifier:
+      uriPrefix: http://localhost:11000
+    hedera:
+      mainnet:
+        enabled: false
+      testnet:
+        enabled: true
+        batch:
+            size: 3072
+            time: "3s"
+            ttl: "15m"
+        accountId: "0.0.32921"
+        privateKey: 302e020100300506032b657004220420e480c306b0a17ba184a9809ee59afe9fac37901afa9899f3f8db6d70bc4009b9
+        topicId: "0.0.32923" 
+    eth:
+      elastos:
+        enabled: false  
+      mainnet:
+        enabled: false
+      testnet:
+        enabled: true  
+        endpoint: https://rinkeby.infura.io/v3/ba25a62205f24e5bb74d4f9738910a83
+        privatekey: EB3AF8DD18646CBF1BFAF5644338D7941909718C2FFFE170E4D5F6860A88AFE5
+        batch:
+          size: 16384
+          time: "30s"
+          ttl: "12h"
+        gasPrice: "0"
+        txnTimeout: "1h"
+    btc:
+      testnet:
+        enabled: false
+      mainnet: 
+        enabled: false              
+  env: prd   
+  prometheus: 
+    enable: false
+  istioSidecarInject: false   
+
+mongodb:
+  mongodbUsername: sbs
+  mongodbPassword: testtest
+  mongodbRootPassword: root123
+  service:
+    name: mongodb-service
+  mongodbDatabase: provendb  
+  replicaSet:
+    enabled: true
+    replicas:
+      secondary: 0
+      arbiter: 0  
+  
+global:
+  targetDBURI: mongodb://sbs:testtest@mongodb-service/provendb
+  blockcypher:
+    token: 2fb5bd3c929741f9a67be3be85b3e161
+  cloud: "MINIKUBE"  
+  # Can be one of the following:
+  # 1. GCP
+  # 2. AZURE
+  # 3. MINIKUBE
+  # 4. DOCKER_DESKTOP_KUBERNETES
+
+
+   
+
+
+    

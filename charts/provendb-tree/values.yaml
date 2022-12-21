@@ -1,0 +1,45 @@
+# Default values for tree-helm.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+istioSidecarInject: false
+safeToEvict: true
+
+tree:
+  image:
+    repository: southbanksoftware/provendb-tree
+    tag: latest
+  resources: 
+    requests:
+      memory: 2Gi # 4 GB
+      cpu: "1000m"  # 1 CPUs
+    limits:
+      memory: 8Gi # 4 GB
+      cpu: 3000 #  1 CPUs  
+  host:
+    port: 10000
+  targetDB: "provendocs-helm"  
+  env: "prd"
+
+prometheus:
+    enable: true
+    port: 10001  
+
+mongodbcache:
+  bindip: 127.0.0.1
+  port: 30010  
+  size: 1Gi
+  image:
+    repository: mongo
+    tag: "4.2.0"
+
+jaegeragent:
+  host:
+    port: jaeger-agent.istio-system.svc.cluster.local:6831
+  enabled: false  
+
+
+kubecost:
+  teamName: core  
+  productName: tree

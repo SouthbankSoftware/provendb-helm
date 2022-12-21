@@ -1,0 +1,12 @@
+replicaCount: 1
+istioSidecarInject: false
+safeToEvict: true
+
+image:
+  repository: southbanksoftware/provendb-concierge
+  tag: latest
+
+env: "prd"
+
+
+  

@@ -1,0 +1,266 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ template "baseName" . }}-provendb-proxy-statefulset
+  namespace: {{ .Release.Namespace }}
+spec:
+  serviceName: {{ template "baseName" . }}-provendb-proxy-service
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "baseName" . }}-provendb-proxy
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: {{ .Values.prometheus.enable | quote }}
+        prometheus.io/port: {{ .Values.prometheus.port | quote }}
+        prometheus.io/scheme: http
+        sidecar.istio.io/inject: {{ .Values.istioSidecarInject | quote }} 
+        cluster-autoscaler.kubernetes.io/safe-to-evict: {{ .Values.safeToEvict | quote }} 
+      labels:
+        app: {{ template "baseName" . }}-provendb-proxy
+        team: {{ .Values.kubecost.teamName }}
+        product: {{ .Values.kubecost.productName }}
+        env: {{ .Release.Namespace }}
+    spec:
+      containers:
+        - name: proxy-sidecar-mongodb
+          image: {{ .Values.proxy.sidecarmongodb.image.repository }}:{{ .Values.proxy.sidecarmongodb.image.tag }}
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "50Mi"
+              cpu: "50m"
+            limits:  
+              memory: "100Mi"
+              cpu: "300m"
+          volumeMounts:
+            - name: {{ template "baseName" . }}-provendb-proxy-sidecar-mongodb-data
+              mountPath: /data/db
+            {{ if ne .Values.global.cloud "DOCKER_DESKTOP_KUBERNETES"}}    
+            - name: tz-config
+              mountPath: /etc/localtime
+            {{ end }}  
+          command: [ "/bin/sh", "-c", "(mongod  --fork --logpath /var/log/mongod.log  --nojournal --port 27017 --bind_ip ${BIND_IP} ) && \
+                      mongo --host $BIND_IP $USER_DATABASES --port 27017 --eval \"var userPresent = db.runCommand({ usersInfo: { user: '$AUTH_USERNAME', db: '$USER_DATABASES' } }).users.length > 0;
+                      if(!userPresent){
+                        db.runCommand({ createRole: 'superadmin', privileges: [], roles: [] });
+                        db.runCommand({ createRole: 'superuser', privileges: [], roles: [] });
+                        db.runCommand({ createUser: '$AUTH_USERNAME', pwd: '$AUTH_PASSWORD', roles: [{ role: 'superadmin', db: '$USER_DATABASES' }] })
+                      }\" && \
+                      tail -f /var/log/mongod.log"]
+          env:
+            - name: SIDECAR_MONGODB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ template "baseName" . }}-provendb-proxy-configmap
+                  key: proxy.sidecarmongodb.port
+            - name: BIND_IP
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ template "baseName" . }}-provendb-proxy-configmap
+                  key: proxy.sidecarmongodb.bind.ip
+            - name: AUTH_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "baseName" . }}-provendb-proxy-secret
+                  key: proxy.auth.username
+            - name: AUTH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "baseName" . }}-provendb-proxy-secret
+                  key: proxy.auth.password
+            - name: USER_DATABASES
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ template "baseName" . }}-provendb-proxy-configmap
+                  key: proxy.userDatabases        
+        - name: proxy
+          image: {{ .Values.proxy.image.repository }}:{{ .Values.proxy.image.tag }}
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "600Mi"
+              cpu: "50m"
+            limits:  
+              memory: "2Gi"
+              cpu: "500m" 
+          livenessProbe:
+            httpGet:
+                path: /live
+                port: {{ .Values.prometheus.port }}
+            initialDelaySeconds: 15 #wait this period after starting first time
+            periodSeconds: 30  # polling interval
+            timeoutSeconds: 60    # wish to receive response within this time period
+          readinessProbe: 
+            httpGet:
+                path: /ready
+                port: {{ .Values.prometheus.port }}
+            initialDelaySeconds: 15 #wait this period after staring first time
+            periodSeconds: 30    # polling interval
+            timeoutSeconds: 60 
+          ports:
+            - containerPort: {{ .Values.proxy.port }}
+            - containerPort: {{ .Values.proxy.grpc.port }}
+            - containerPort: {{ .Values.prometheus.port }}
+          volumeMounts:
+          - name: proxy-p12-file
+            mountPath: /secrets/proxy-p12-file
+            readOnly: true  
+          {{ if ne .Values.global.cloud "DOCKER_DESKTOP_KUBERNETES"}}    
+          - name: tz-config
+            mountPath: /etc/localtime   
+          {{ end }}  
+          # command: ["echo", "\"a.tx\"", ">", "a.txt", "&&", "/usr/bin/tail", "-f", "a.txt"]
+          command: ["/bin/ash"]
+          args: [
+              "-c",
+              "./proxy-server.sh"
+            ]
+          env:
+            - name: ENV_PROVENDB_PROXY_DATASIZEGBLIMIT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ template "baseName" . }}-provendb-proxy-configmap
+                  key: proxy.data.size.gb.limit
+            - name: ENV_PROVENDB_SECURITY_CERT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: provendb
+                  key: proxy.p12.file.password
+            - name: ENV_PROVENDB_SECURITY_CERT
+              value: "/secrets/proxy-p12-file/proxy.p12"
+            - name: ENV_PROVENDB_SECURITY_SSL_ENABLE
+              valueFrom:
+                  configMapKeyRef:
+                    name: {{ template "baseName" . }}-provendb-proxy-configmap
+                    key: proxy.ssl.enable
+            - name: ENV_PROVENDB_MONGO_AUTH_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ template "baseName" . }}-provendb-proxy-configmap
+                  key: proxy.mongo.auth.uri
+
+            {{if eq  .Values.service.type "LoadBalancer"}} 
+            - name: ENV_PROVENDB_MONGO_URI
+              valueFrom:
+                secretKeyRef:
+                  name: provendb
+                  key: targetDBUri
+            {{else if contains "provendb-proxy-playground" .Release.Name }}
+            - name: ENV_PROVENDB_MONGO_URI
+              valueFrom:
+                secretKeyRef:
+                  name: provendb
+                  key: playgroundTargetDBUri
+            {{ else }}
+            - name: ENV_PROVENDB_MONGO_URI
+              valueFrom:
+                secretKeyRef:
+                  name: provendb
+                  key: targetDBUri
+            {{ end }}
+            - name: ENV_PROVENDB_PROXY_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ template "baseName" . }}-provendb-proxy-configmap
+                  key: proxy.port
+            - name: PROXY_MONGODB_SSL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ template "baseName" . }}-provendb-proxy-configmap
+                  key: proxy.mongodb.ssl
+            - name: ENV_TREE_SERVICE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ template "baseName" . }}-provendb-proxy-configmap
+                  key: proxy.treeservice.host
+            - name: ENV_TREE_SERVICE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ template "baseName" . }}-provendb-proxy-configmap
+                  key: tree.port
+            - name: ENV_TREE_SERVICE_DB_INSTANCE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ template "baseName" . }}-provendb-proxy-configmap
+                  key: proxy.treeservice.dbinstance
+            - name: ENV_PROVENDB_PROXY_MAXTHREADS
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ template "baseName" . }}-provendb-proxy-configmap
+                  key: proxy.max.threads
+            - name: MAX_CONNECTIONS
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ template "baseName" . }}-provendb-proxy-configmap
+                  key: proxy.max.connections
+            - name: ENV_PROVENDB_MONGO_AUTH_ENABLE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ template "baseName" . }}-provendb-proxy-configmap
+                  key: proxy.auth.enabled
+            - name: USER_DATABASES
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ template "baseName" . }}-provendb-proxy-configmap
+                  key: proxy.userDatabases  
+            - name: ENV_PROVENDB_PROXY_BLOCKCYPHER_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: provendb
+                  key: blockcypher.token 
+            - name: PROXY_JAEGER_AGENT_HOST_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ template "baseName" . }}-provendb-proxy-configmap
+                  key: jaeger-agent.host.port
+            - name: PROXY_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ template "baseName" . }}-provendb-proxy-configmap
+                  key: proxy.healthcheck.host
+
+            - name: ENV_PROVENDB_PROXY_CHAINPOINT_NODES
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ template "baseName" . }}-provendb-proxy-configmap
+                  key: proxy.chainpoint.nodes 
+                     
+            - name: PROXY_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ template "baseName" . }}-provendb-proxy-configmap
+                  key: proxy.env
+
+            - name: ENV_PROVENDB_JVM_EXT
+              value: {{ .Values.proxy.jvm }}       
+
+            - name: SERVICE_ID
+              value: {{ template "serviceID" . }}
+
+            - name: ENV_ANCHOR_SERVICE_HOST
+              value: {{ template "baseName" . }}-{{ .Values.anchor.host }}.{{ .Release.Namespace }}.svc.cluster.local
+
+            - name: ENV_ANCHOR_SERVICE_PORT
+              value: {{ .Values.anchor.port |  quote }}
+
+
+      volumes:
+        - name: proxy-p12-file
+          secret:
+            secretName: provendb
+        {{ if ne .Values.global.cloud "DOCKER_DESKTOP_KUBERNETES"}}      
+        - name: tz-config
+          hostPath:
+            path: /usr/share/zoneinfo/Australia/Melbourne    
+        {{ end }}    
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ template "baseName" . }}-provendb-proxy-sidecar-mongodb-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: fast
+        resources:
+          requests:
+            storage: 1Gi
